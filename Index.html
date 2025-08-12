@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <style>
+    /* Base Styles */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #fff8f0;
+      color: #333;
+      -webkit-text-size-adjust: 100%;
+    }
+    
+    /* Layout Containers */
+    .main-container {
+      display: flex;
+      min-height: 100vh;
+      padding: 20px;
+      box-sizing: border-box;
+      justify-content: center;
+    }
+    
+    /* Desktop Layout - Side by Side */
+    .desktop-layout {
+      display: flex;
+      width: 100%;
+      max-width: 1200px;
+      gap: 40px;
+    }
+    
+    .desktop-jackpot-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 300px;
+    }
+    
+    .desktop-table-section {
+      flex: 2;
+      min-width: 500px;
+    }
+    
+    /* Mobile Layout - Centered Stack */
+    .mobile-layout {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 600px;
+    }
+    
+    /* Common Game Elements */
+    .company-logo {
+      width: 100%;
+      height: auto;
+      margin-bottom: 20px;
+    }
+    
+    .jackpot-display {
+      width: 100%;
+      height: 80px;
+      margin-bottom: 20px;
+      border: 4px solid #d33;
+      border-radius: 10px;
+      background-color: #fff;
+      font-size: 36px;
+      font-weight: bold;
+      color: #d33;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .bingo-table {
+      border-collapse: collapse;
+      width: 100%;
+      table-layout: fixed;
+      margin: 20px 0;
+    }
+    
+    .bingo-table th {
+      background-color: #d33;
+      color: white;
+      padding: 8px;
+    }
+    
+    .bingo-table td {
+      border: 1px solid #ccc;
+      padding: 0;
+      text-align: center;
+      height: 30px;
+    }
+    
+    .game-button {
+      display: block;
+      width: 200px;
+      margin: 20px auto;
+      padding: 10px 0;
+      font-size: 16px;
+      background-color: #d33;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-align: center;
+    }
+    
+    /* Mobile Scaling */
+    .mobile-view {
+      --logo-width: 600px;
+      --jackpot-height: 100px;
+      --jackpot-font: 48px;
+      --cell-height: 40px;
+      --cell-font: 20px;
+      --header-font: 24px;
+      --button-font: 20px;
+    }
+    
+    .mobile-layout .company-logo {
+      width: var(--logo-width);
+      max-width: 90vw;
+    }
+    
+    .mobile-layout .jackpot-display {
+      height: var(--jackpot-height);
+      font-size: var(--jackpot-font);
+      line-height: var(--jackpot-height);
+      width: 90vw;
+      max-width: 400px;
+    }
+    
+    .mobile-layout .bingo-table td {
+      height: var(--cell-height);
+      font-size: var(--cell-font);
+    }
+    
+    .mobile-layout .bingo-table th {
+      font-size: var(--header-font);
+      padding: calc(var(--header-font) / 2);
+    }
+    
+    .mobile-layout .game-button {
+      font-size: var(--button-font);
+      padding: calc(var(--button-font) / 2) var(--button-font);
+      width: 90vw;
+      max-width: 400px;
+    }
+    
+    /* Small Screen Adjustments */
+    .small-screen-view {
+      --jackpot-height: 80px;
+      --jackpot-font: 40px;
+      --cell-height: 35px;
+      --cell-font: 18px;
+      --header-font: 20px;
+    }
+    
+    /* Landscape Adjustments */
+    .landscape-view {
+      --jackpot-height: 70px;
+      --jackpot-font: 36px;
+      --cell-height: 30px;
+      --cell-font: 16px;
+    }
+    
+    /* Interactive Elements */
+    .highlight {
+      background-color: #ffcccb;
+    }
+    
+    .pulse {
+      animation: pulse 1s ease;
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); background-color: #ffcccb; }
+      50% { transform: scale(1.2); background-color: #ffe0e0; }
+      100% { transform: scale(1); background-color: #ffcccb; }
+    }
+    
+    .spinner {
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      border: 4px solid #d33;
+      border-top: 4px solid #fff8f0;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Desktop Layout -->
+  <div class="main-container">
+    <div class="desktop-layout">
+      <div class="desktop-jackpot-section">
+        <img src="https://lh3.googleusercontent.com/d/1Ok1ciaG75e9O7MSOJ7X5I-ktHrarlcWe" alt="Company Logo" class="company-logo">
+        <div class="jackpot-display" id="desktopJackpotDisplay">---</div>
+        <button class="game-button" id="desktopSpinButton">🎰 Spin</button>
+      </div>
+      
+      <div class="desktop-table-section">
+        <table class="bingo-table" id="desktopBingoTable"></table>
+        <button class="game-button" onclick="confirmNewGame()">🔄 New Game</button>
+      </div>
+    </div>
+    
+    <!-- Mobile Layout -->
+    <div class="mobile-layout">
+      <img src="https://lh3.googleusercontent.com/d/1Ok1ciaG75e9O7MSOJ7X5I-ktHrarlcWe" alt="Company Logo" class="company-logo">
+      <div class="jackpot-display" id="mobileJackpotDisplay">---</div>
+      <button class="game-button" id="mobileSpinButton">🎰 Spin</button>
+      <table class="bingo-table" id="mobileBingoTable"></table>
+      <button class="game-button" onclick="confirmNewGame()">🔄 New Game</button>
+    </div>
+  </div>
+
+  <script>
+    // Game State
+    let numbers = [];
+    let selected = null;
+    
+    // Advanced Device Detection
+    function getDeviceProfile() {
+      const userAgent = navigator.userAgent.toLowerCase();
+      const isMobileOS = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+      const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+      const screenWidth = window.screen.width;
+      const screenHeight = window.screen.height;
+      const pixelRatio = window.devicePixelRatio || 1;
+      const isLandscape = window.matchMedia("(orientation: landscape)").matches;
+      
+      // Calculate physical screen size (in inches)
+      const diagonalPixels = Math.sqrt(Math.pow(screenWidth, 2) + Math.pow(screenHeight, 2));
+      const diagonalInches = diagonalPixels / (450 * pixelRatio); // Approximate DPI
+      
+      return {
+        isMobile: isMobileOS || isTouchDevice,
+        isTouchDevice,
+        screenWidth,
+        screenHeight,
+        pixelRatio,
+        isLandscape,
+        diagonalInches,
+        isSmallScreen: diagonalInches < 5
+      };
+    }
+    
+    // Apply Layout Based on Device
+    function applyLayout() {
+      const device = getDeviceProfile();
+      const desktopLayout = document.querySelector('.desktop-layout');
+      const mobileLayout = document.querySelector('.mobile-layout');
+      
+      // Reset all view classes
+      document.body.classList.remove('mobile-view', 'small-screen-view', 'landscape-view');
+      
+      if (device.isMobile) {
+        desktopLayout.style.display = 'none';
+        mobileLayout.style.display = 'flex';
+        document.body.classList.add('mobile-view');
+        
+        if (device.isSmallScreen) {
+          document.body.classList.add('small-screen-view');
+        }
+        
+        if (device.isLandscape) {
+          document.body.classList.add('landscape-view');
+        }
+      } else {
+        desktopLayout.style.display = 'flex';
+        mobileLayout.style.display = 'none';
+      }
+    }
+    
+    // Initialize Game
+    function initGame() {
+      numbers = [];
+      ['B','I','N','G','O'].forEach((letter, i) => {
+        for (let j = 1; j <= 15; j++) {
+          numbers.push({ letter: letter, number: j + i * 15 });
+        }
+      });
+      
+      drawTable('desktopBingoTable');
+      drawTable('mobileBingoTable');
+      saveState();
+    }
+    
+    // Draw Bingo Table
+    function drawTable(tableId) {
+      const table = document.getElementById(tableId);
+      table.innerHTML = '';
+      
+      const header = document.createElement('tr');
+      ['B','I','N','G','O'].forEach(letter => {
+        const th = document.createElement('th');
+        th.textContent = letter;
+        header.appendChild(th);
+      });
+      table.appendChild(header);
+      
+      for (let row = 0; row < 15; row++) {
+        const tr = document.createElement('tr');
+        for (let col = 0; col < 5; col++) {
+          const num = row + 1 + col * 15;
+          const td = document.createElement('td');
+          td.textContent = num;
+          td.id = `cell-${num}`;
+          tr.appendChild(td);
+        }
+        table.appendChild(tr);
+      }
+    }
+    
+    // Roll a New Number
+    function rollNumber() {
+      if (numbers.length === 0) return;
+      
+      const index = Math.floor(Math.random() * numbers.length);
+      selected = numbers[index];
+      
+      const desktopDisplay = document.getElementById('desktopJackpotDisplay');
+      const mobileDisplay = document.getElementById('mobileJackpotDisplay');
+      
+      desktopDisplay.innerHTML = mobileDisplay.innerHTML = '<div class="spinner"></div>';
+      
+      setTimeout(() => {
+        const displayText = `${selected.letter}${selected.number}`;
+        desktopDisplay.textContent = mobileDisplay.textContent = displayText;
+        numbers.splice(index, 1);
+        highlightTable(selected.number);
+        saveState();
+      }, 5000);
+    }
+    
+    // Highlight Called Number
+    function highlightTable(num) {
+      const cells = document.querySelectorAll(`[id="cell-${num}"]`);
+      cells.forEach(cell => {
+        cell.classList.add('highlight', 'pulse');
+        setTimeout(() => {
+          cell.classList.remove('pulse');
+        }, 1000);
+      });
+    }
+    
+    // Confirmation Dialog
+    function showCustomConfirm(message, onConfirm) {
+      const overlay = document.createElement('div');
+      overlay.style.position = 'fixed';
+      overlay.style.top = '0';
+      overlay.style.left = '0';
+      overlay.style.width = '100%';
+      overlay.style.height = '100%';
+      overlay.style.backgroundColor = 'rgba(0,0,0,0.5)';
+      overlay.style.display = 'flex';
+      overlay.style.alignItems = 'center';
+      overlay.style.justifyContent = 'center';
+      overlay.style.zIndex = '1000';
+      
+      const box = document.createElement('div');
+      box.style.backgroundColor = '#fff';
+      box.style.padding = '20px';
+      box.style.borderRadius = '10px';
+      box.style.maxWidth = '80%';
+      box.style.textAlign = 'center';
+      
+      const messageEl = document.createElement('p');
+      messageEl.textContent = message;
+      messageEl.style.marginBottom = '20px';
+      box.appendChild(messageEl);
+      
+      const buttonContainer = document.createElement('div');
+      buttonContainer.style.display = 'flex';
+      buttonContainer.style.justifyContent = 'center';
+      buttonContainer.style.gap = '10px';
+      
+      const yesBtn = document.createElement('button');
+      yesBtn.textContent = 'Yes';
+      yesBtn.style.padding = '10px 20px';
+      yesBtn.style.backgroundColor = '#d33';
+      yesBtn.style.color = 'white';
+      yesBtn.style.border = 'none';
+      yesBtn.style.borderRadius = '5px';
+      yesBtn.onclick = () => {
+        onConfirm();
+        document.body.removeChild(overlay);
+      };
+      
+      const noBtn = document.createElement('button');
+      noBtn.textContent = 'No';
+      noBtn.style.padding = '10px 20px';
+      noBtn.style.backgroundColor = '#666';
+      noBtn.style.color = 'white';
+      noBtn.style.border = 'none';
+      noBtn.style.borderRadius = '5px';
+      noBtn.onclick = () => document.body.removeChild(overlay);
+      
+      buttonContainer.appendChild(yesBtn);
+      buttonContainer.appendChild(noBtn);
+      box.appendChild(buttonContainer);
+      overlay.appendChild(box);
+      document.body.appendChild(overlay);
+    }
+    
+    // New Game Confirmation
+    function confirmNewGame() {
+      showCustomConfirm("Start new game? This will reset all progress.", newGame);
+    }
+    
+    // Start New Game
+    function newGame() {
+      localStorage.removeItem('bingoState');
+      initGame();
+      document.getElementById('desktopJackpotDisplay').textContent = '---';
+      document.getElementById('mobileJackpotDisplay').textContent = '---';
+    }
+    
+    // Save Game State
+    function saveState() {
+      const state = {
+        numbers: numbers,
+        highlighted: Array.from(document.querySelectorAll('.highlight')).map(c => c.id)
+      };
+      localStorage.setItem('bingoState', JSON.stringify(state));
+    }
+    
+    // Restore Game State
+    function restoreState() {
+      const state = JSON.parse(localStorage.getItem('bingoState'));
+      if (state) {
+        numbers = state.numbers;
+        drawTable('desktopBingoTable');
+        drawTable('mobileBingoTable');
+        state.highlighted.forEach(id => {
+          document.querySelectorAll(`[id="${id}"]`).forEach(cell => {
+            cell.classList.add('highlight');
+          });
+        });
+      } else {
+        initGame();
+      }
+    }
+    
+    // Initialize on Load
+    window.onload = function() {
+      applyLayout();
+      restoreState();
+      
+      document.getElementById('desktopSpinButton')?.addEventListener('click', rollNumber);
+      document.getElementById('mobileSpinButton')?.addEventListener('click', rollNumber);
+      
+      // Re-apply layout on orientation changes
+      window.addEventListener('orientationchange', function() {
+        setTimeout(applyLayout, 100);
+      });
+      
+      // Re-apply layout on window resize
+      window.addEventListener('resize', function() {
+        clearTimeout(this.resizeTimer);
+        this.resizeTimer = setTimeout(applyLayout, 200);
+      });
+    };
+  </script>
+</body>
+</html>
