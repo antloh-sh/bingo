@@ -37,6 +37,25 @@
       margin-top: 20px;
       color: #ff4500;
     }
+    #tracker {
+      margin-top: 30px;
+      display: grid;
+      grid-template-columns: repeat(15, 1fr);
+      gap: 5px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .cell {
+      padding: 8px;
+      background-color: #ffffff;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .highlight {
+      background-color: #90ee90;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -45,6 +64,8 @@
   <button class="button" onclick="spinWheel()">🎰 Spin</button>
   <div id="result"></div>
 
+  <div id="tracker"></div>
+
   <script>
     const canvas = document.getElementById("wheel");
     const ctx = canvas.getContext("2d");
@@ -52,6 +73,7 @@
     const sliceAngle = (2 * Math.PI) / numbers.length;
     let angle = 0;
     let spinning = false;
+    const drawnNumbers = new Set();
 
     function drawWheel(currentAngle) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -75,19 +97,33 @@
       }
     }
 
+    function updateTracker() {
+      const tracker = document.getElementById("tracker");
+      tracker.innerHTML = "";
+      for (let i = 1; i <= 75; i++) {
+        const cell = document.createElement("div");
+        cell.className = "cell";
+        cell.textContent = i;
+        if (drawnNumbers.has(i)) {
+          cell.classList.add("highlight");
+        }
+        tracker.appendChild(cell);
+      }
+    }
+
     function spinWheel() {
       if (spinning) return;
       spinning = true;
-      let duration = 5000; // 5 seconds
+      let duration = 5000;
       let start = null;
-      let totalRotation = Math.random() * 360 + 360 * 5; // at least 5 full spins
+      let totalRotation = Math.random() * 360 + 360 * 5;
       let finalAngle = angle + totalRotation * Math.PI / 180;
 
       function animate(timestamp) {
         if (!start) start = timestamp;
         let elapsed = timestamp - start;
         let progress = Math.min(elapsed / duration, 1);
-        let easeOut = 1 - Math.pow(1 - progress, 3); // ease out cubic
+        let easeOut = 1 - Math.pow(1 - progress, 3);
         angle = finalAngle * easeOut;
         drawWheel(angle);
         if (progress < 1) {
@@ -96,7 +132,9 @@
           spinning = false;
           const selectedIndex = Math.floor(((2 * Math.PI - (angle % (2 * Math.PI))) / sliceAngle)) % numbers.length;
           const selectedNumber = numbers[selectedIndex];
+          drawnNumbers.add(selectedNumber);
           document.getElementById("result").textContent = `🎉 Number: ${selectedNumber} 🎉`;
+          updateTracker();
         }
       }
 
@@ -104,6 +142,7 @@
     }
 
     drawWheel(angle);
+    updateTracker();
   </script>
 </body>
 </html>
