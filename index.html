@@ -174,6 +174,10 @@
       <h2 id="modal-number"></h2>
     </div>
   </div>
+
+  <!-- Sound effect -->
+  <audio id="blip" src="blip.mp3" preload="auto"></audio>
+
   <script>
     // Bingo numbers B1-B15, I16-I30, N31-N45, G46-G60, O61-O75
     const bingoNumbers = [];
@@ -199,9 +203,8 @@
     const pointerWidth = 32;
 
     let remainingNumbers = [...wheelLabels];
-    let pickedNumbers = []; // Strings like 'B1'
-    let highlightedNumbers = []; // Numbers like 1
-
+    let pickedNumbers = [];
+    let highlightedNumbers = [];
     let spinning = false;
     let spinStart = null;
     let spinDuration = 0;
@@ -211,6 +214,9 @@
     let winnerIndex = null;
     let winnerLabel = null;
     let currentWheelAngle = 0;
+
+    // Sound effect
+    const blipAudio = document.getElementById('blip');
 
     // Local Storage keys
     const LS_GAME = 'bingoGameState_v4';
@@ -262,7 +268,6 @@
         ctx.moveTo(center.x, center.y);
         ctx.arc(center.x, center.y, radius, a0, a1, false);
         ctx.closePath();
-        // Only white and grey colors
         ctx.fillStyle = (i % 2 === 0) ? '#f7f7f7' : '#e0e0e0';
         if (highlightIndex !== null && i === highlightIndex) {
           ctx.fillStyle = '#ffd870';
@@ -327,7 +332,6 @@
     function showModal(label, duration = 5000) {
       const modalBg = document.getElementById('modal-bg');
       const modalNum = document.getElementById('modal-number');
-      // Center number vertically and horizontally
       modalNum.innerHTML = `<span style="width:100%;display:flex;align-items:center;justify-content:center;height:100%;">${label}</span>`;
       modalBg.style.display = 'flex';
       setTimeout(hideModal, duration);
@@ -336,7 +340,8 @@
       document.getElementById('modal-bg').style.display = 'none';
     }
 
-    // --- Spin Logic ---
+    // --- Spin Logic with Sound Effect ---
+    let lastPlayedSlice = null;
     function startSpin() {
       if (spinning || remainingNumbers.length === 0) return;
       spinning = true;
@@ -346,18 +351,34 @@
       spinAngle = 0;
       winnerIndex = null;
       winnerLabel = null;
+      lastPlayedSlice = null;
       animateSpin();
     }
 
     function animateSpin() {
       const now = performance.now();
       const elapsed = now - spinStart;
-      // 120 RPM = 2 rotations/sec = 2*2PI rad/sec
-      const totalRotations = 2 * (spinDuration / 1000); // 2 rotations per sec
-      // Ease-out cubic
+      const totalRotations = 2 * (spinDuration / 1000); // 120 RPM = 2 rotations/sec
       const t = Math.min(elapsed / spinDuration, 1);
       const ease = 1 - Math.pow(1 - t, 3);
       spinAngle = startAngle + totalRotations * 2 * Math.PI * ease;
+
+      // Sound effect: detect if the slice under the arrow changed since last frame
+      const pointerAngle = (0 - spinAngle + 2 * Math.PI) % (2 * Math.PI);
+      const sliceAngle = (2 * Math.PI) / remainingNumbers.length;
+      let idx = Math.floor(pointerAngle / sliceAngle);
+      if (idx < 0) idx += remainingNumbers.length;
+      idx = idx % remainingNumbers.length;
+
+      if (lastPlayedSlice !== null && idx !== lastPlayedSlice) {
+        // Play the blip sound for each new slice crossing the arrow
+        // Reset if already playing for rapid spins
+        try {
+          blipAudio.currentTime = 0;
+          blipAudio.play();
+        } catch (e) {}
+      }
+      lastPlayedSlice = idx;
 
       drawWheel(spinAngle);
 
@@ -365,21 +386,13 @@
         requestAnimationFrame(animateSpin);
       } else {
         currentWheelAngle = spinAngle % (2 * Math.PI);
-        // Pointer is at 0 radians (rightwards)
-        const pointerAngle = (0 - spinAngle + 2 * Math.PI) % (2 * Math.PI);
-        const sliceAngle = (2 * Math.PI) / remainingNumbers.length;
-        let idx = Math.floor(pointerAngle / sliceAngle);
-        if (idx < 0) idx += remainingNumbers.length;
-        winnerIndex = idx % remainingNumbers.length;
+        winnerIndex = idx;
         winnerLabel = remainingNumbers[winnerIndex];
 
-        // Highlight the slice
         drawWheel(currentWheelAngle, winnerIndex);
 
-        // Show number in popup for 5 secs
         setTimeout(() => {
           showModal(winnerLabel, 5000);
-          // After 5 secs, proceed to pick number
           setTimeout(() => {
             pickNumber();
           }, 5000);
@@ -400,7 +413,6 @@
       pickedNumbers.push(winnerLabel);
       const num = getNumberFromLabel(winnerLabel);
       highlightedNumbers.push(num);
-      // Remove from wheel
       remainingNumbers.splice(winnerIndex, 1);
       saveState();
       drawTable();
@@ -454,7 +466,6 @@
 
     // --- Event Listeners ---
     wheelCanvas.addEventListener('click', function(e) {
-      // Only spin if click is inside the logo circle
       const rect = wheelCanvas.getBoundingClientRect();
       const x = e.clientX - rect.left - center.x;
       const y = e.clientY - rect.top - center.y;
