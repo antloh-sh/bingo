@@ -294,7 +294,7 @@
       ctx.lineWidth = 3;
       ctx.stroke();
 
-      // Logo image (SVG)
+      // Draw the uploaded round transparent logo.png in the center
       ctx.save();
       ctx.beginPath();
       ctx.arc(center.x, center.y, logoRadius - 4, 0, 2 * Math.PI);
@@ -303,7 +303,7 @@
       logoImg.onload = function() {
         ctx.drawImage(logoImg, center.x - (logoRadius - 4), center.y - (logoRadius - 4), (logoRadius - 4) * 2, (logoRadius - 4) * 2);
       };
-      logoImg.src = "data:image/svg+xml,%3Csvg width='102' height='102' viewBox='0 0 102 102' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cellipse cx='51' cy='51' rx='51' ry='51' fill='%23fff'%3E%3C/ellipse%3E%3Ccircle cx='51' cy='51' r='38' stroke='%232684ff' stroke-width='5' fill='none'/%3E%3Crect x='32' y='48' width='38' height='14' rx='7' fill='%23ff5544'/%3E%3Crect x='38' y='38' width='26' height='18' rx='6' fill='%23fff'%3E%3C/rect%3E%3Crect x='38' y='39' width='26' height='6' rx='3' fill='%23ff5544'/%3E%3C/svg%3E";
+      logoImg.src = "logo.png";
       ctx.restore();
 
       // Draw pointer at 3 o'clock (right)
