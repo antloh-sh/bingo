@@ -1,537 +1,476 @@
 <!DOCTYPE html>
-
-<html>
+<html lang="en">
 <head>
-<base target="_top"/>
-<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
-<style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bingo App</title>
+  <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f8f9fb;
       margin: 0;
       padding: 0;
-      background-color: #fff8f0;
-      color: #333;
-      -webkit-text-size-adjust: 100%; /* Prevent font scaling in Safari */
     }
     .container {
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      padding: 20px;
-      gap: 20px;
-    }
-    .jackpot-container, .table-container {
-      text-align: center;
-    }
-    .company-logo {
-      width: 400px;
-      height: auto;
-      margin: 0 auto 15px;
-      display: block;
-      max-width: 100%;
-    }
-    .jackpot-display {
-      position: relative;
-      width: 200px;
-      height: 80px;
-      margin: auto;
-      overflow: hidden;
-      border: 4px solid #d33;
+      max-width: 900px;
+      margin: 32px auto;
+      background: #fff;
       border-radius: 10px;
-      background-color: #fff;
-      font-size: 36px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+      padding: 32px;
+      border: 1px solid #2684ff;
+    }
+    .bingo-title {
+      font-size: 1.7rem;
+      text-align: left;
       font-weight: bold;
-      color: #d33;
-      line-height: 80px;
+      margin-bottom: 12px;
+      margin-left: 80px;
+      letter-spacing: 0.05em;
     }
-    .spinner {
-      display: inline-block;
-      width: 30px;
-      height: 30px;
-      border: 4px solid #d33;
-      border-top: 4px solid #fff8f0;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      vertical-align: middle;
+    .bingo-layout {
+      display: flex;
+      flex-direction: row;
+      gap: 36px;
+      align-items: flex-start;
+      justify-content: flex-start;
+      padding: 18px 0 0 0;
     }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+    .wheel-section {
+      flex: 0 0 340px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-left: 40px;
     }
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      max-width: 600px;
-      margin: auto;
-      height: 350px;
-      table-layout: fixed;
-    }
-    th {
-      background-color: #d33;
-      color: white;
-      padding: 5px;
-    }
-    td {
-      border: 1px solid #ccc;
-      padding: 3px;
-      text-align: center;
-      width: 40px;
-      height: 22px;
-      font-size: 13px;
-    }
-    .highlight {
-      background-color: #ffcccb;
-    }
-    .pulse {
-      animation: pulse 1s ease;
-    }
-    @keyframes pulse {
-      0% { transform: scale(1); background-color: #ffcccb; }
-      50% { transform: scale(1.2); background-color: #ffe0e0; }
-      100% { transform: scale(1); background-color: #ffcccb; }
-    }
-    button {
-      margin-top: 10px;
-      padding: 10px 20px;
-      font-size: 16px;
-      background-color: #d33;
-      color: white;
-      border: none;
-      border-radius: 5px;
+    .wheel-canvas {
       cursor: pointer;
-      width: 200px;
-      max-width: 100%;
+      border-radius: 50%;
+      box-shadow: 0 2px 8px rgba(50,60,80,0.10);
+      background: #f3f7fa;
     }
-
-    /* Mobile Layout - initially hidden */
-    .mobile-layout {
-      display: none;
+    .actions {
+      text-align: center;
+      width: 100%;
+      margin-top: 24px;
     }
-    
-    /* Desktop Layout - shown by default */
-    .desktop-layout {
-      display: block;
+    .btn {
+      font-size: 1rem;
+      padding: 12px 28px;
+      border-radius: 6px;
+      background: #2684ff;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 1px 6px rgba(50,60,80,0.12);
+      transition: background 0.18s;
+      margin-top: 10px;
     }
-
-    /* Mobile detection using touch and high DPI */
-    @media (hover: none) and (pointer: coarse), 
-           (max-width: 1080px) and (min-resolution: 192dpi) {
-      .mobile-layout {
-        display: block;
-      }
-      .desktop-layout {
-        display: none;
-      }
-      .container {
-        flex-direction: column;
-      }
-      .company-logo {
-        width: 90vw;
-        max-width: 500px;
-      }
-      .jackpot-display {
-        width: 90vw;
-        max-width: 400px;
-        height: 120px;
-        font-size: 64px;
-        line-height: 120px;
-      }
-      table {
-        height: auto;
-      }
-      td {
-        height: 40px;
-        font-size: 24px;
-      }
-      th {
-        font-size: 28px;
-        padding: 12px;
-      }
-      button {
-        font-size: 24px;
-        padding: 15px 30px;
-        margin: 20px auto;
-      }
+    .btn:hover {
+      background: #1765b2;
     }
-
-    /* Fallback for older browsers */
-    @media (max-width: 768px) {
-      .mobile-layout {
-        display: block;
-      }
-      .desktop-layout {
-        display: none;
-      }
-      .container {
-        flex-direction: column;
-      }
-      .company-logo {
-        width: 90vw;
-        max-width: 500px;
-      }
-      .jackpot-display {
-        width: 90vw;
-        max-width: 400px;
-        height: 120px;
-        font-size: 64px;
-        line-height: 120px;
-      }
-      table {
-        height: auto;
-      }
-      td {
-        height: 40px;
-        font-size: 24px;
-      }
-      th {
-        font-size: 28px;
-        padding: 12px;
-      }
-      button {
-        font-size: 24px;
-        padding: 15px 30px;
-        margin: 20px auto;
-      }
+    .table-section {
+      flex: 1 0 220px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-right: 40px;
     }
-
-    /* Adjustments for landscape orientation */
-    @media (orientation: landscape) {
-      .mobile-layout .container {
-        padding: 10px;
-      }
-      .mobile-layout .jackpot-display {
-        height: 80px;
-        font-size: 48px;
-        line-height: 80px;
-      }
-      .mobile-layout td {
-        height: 30px;
-        font-size: 18px;
-      }
+    .bingo-table {
+      border-collapse: collapse;
+      margin-bottom: 16px;
+      background: #f9fafc;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 1px 8px rgba(0,0,0,0.04);
+      min-width: 210px;
+    }
+    .bingo-table th, .bingo-table td {
+      border: 1px solid #b9cbdf;
+      padding: 7px 10px;
+      text-align: center;
+      font-size: 1rem;
+      min-width: 28px;
+    }
+    .bingo-table th {
+      background: #2684ff;
+      color: #fff;
+      font-weight: bold;
+      font-size: 1.1rem;
+      letter-spacing: 0.04em;
+    }
+    .highlighted {
+      background: #ffd870 !important;
+      color: #222 !important;
+      font-weight: bold;
+      border-color: #f3c200;
+    }
+    .modal-bg {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.17);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal {
+      background: #fff;
+      padding: 32px 40px;
+      border-radius: 14px;
+      box-shadow: 0 2px 32px rgba(0,0,0,0.19);
+      text-align: center;
+      min-width: 240px;
+      border: 2px solid #ffd870;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal h2 {
+      font-size: 3.3rem;
+      margin-bottom: 0;
+      color: #174bb2;
+      letter-spacing: 0.05em;
+      width: 100%;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 90px;
+    }
+    @media (max-width: 900px) {
+      .container { max-width: 100vw; }
+      .bingo-layout { flex-direction: column; gap: 0; }
+      .table-section, .wheel-section { margin: 0 auto; }
+      .bingo-title { margin-left: 0; text-align:center;}
     }
   </style>
-
-<style>
-  .logo {
-    width: 200px;
-    margin-bottom: 20px;
-  }
-  canvas {
-    margin: 20px auto;
-    display: block;
-  }
-  .button {
-    font-size: 1.5em;
-    padding: 10px 20px;
-    margin: 10px;
-    cursor: pointer;
-    border: none;
-    border-radius: 8px;
-    background-color: #4CAF50;
-    color: white;
-  }
-  .button:hover {
-    background-color: #45a049;
-  }
-  #result {
-    font-size: 2em;
-    margin-top: 20px;
-    color: #ff4500;
-  }
-  #tracker {
-    margin-top: 30px;
-    display: grid;
-    grid-template-columns: repeat(15, 1fr);
-    gap: 5px;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  .cell {
-    padding: 8px;
-    background-color: #ffffff;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  .highlight {
-    background-color: #90ee90;
-    font-weight: bold;
-  }
-</style>
 </head>
 <body>
-<!-- Desktop Layout -->
-<div class="desktop-layout">
-<div class="container">
-<div class="jackpot-container">
-<img alt="Company Logo" class="logo" src="logo.png"/>
-<div class="jackpot-display" id="desktopJackpotDisplay">---</div>
-<button id="desktopSpinButton">🎰 Spin</button>
-</div>
-<div class="table-container">
-<table id="desktopBingoTable"></table>
-<button onclick="confirmNewGame()">🔄 New Game</button>
-</div>
-</div>
-</div>
-<!-- Mobile Layout -->
-<div class="mobile-layout">
-<div class="container">
-<div class="jackpot-container">
-<img alt="Company Logo" class="logo" src="logo.png"/>
-<div class="jackpot-display" id="mobileJackpotDisplay">---</div>
-<button id="mobileSpinButton">🎰 Spin</button>
-</div>
-<div class="table-container">
-<table id="mobileBingoTable"></table>
-<button onclick="confirmNewGame()">🔄 New Game</button>
-</div>
-</div>
-</div>
-<script>
-    let numbers = [];
-    let selected = null;
+  <div class="container">
+    <div class="bingo-title">BINGO</div>
+    <div class="bingo-layout">
+      <div class="wheel-section">
+        <canvas id="wheel" width="320" height="320" class="wheel-canvas" title="Spin the wheel"></canvas>
+        <div class="actions">
+          <button id="newGameBtn" class="btn">New Game</button>
+        </div>
+      </div>
+      <div class="table-section">
+        <table id="bingoTable" class="bingo-table"></table>
+      </div>
+    </div>
+  </div>
+  <div id="modal-bg" class="modal-bg" style="display:none;">
+    <div class="modal">
+      <h2 id="modal-number"></h2>
+    </div>
+  </div>
+  <script>
+    // Bingo numbers B1-B15, I16-I30, N31-N45, G46-G60, O61-O75
+    const bingoNumbers = [];
+    for (let i = 1; i <= 75; i++) bingoNumbers.push(i);
 
-    // Initialize the game
-    function initGame() {
-      numbers = [];
-      ['B','I','N','G','O'].forEach((letter, i) => {
-        for (let j = 1; j <= 15; j++) {
-          numbers.push({ letter: letter, number: j + i * 15 });
-        }
-      });
-      
-      drawTable('desktopBingoTable');
-      drawTable('mobileBingoTable');
-      saveState();
+    const wheelLabels = [];
+    for (let i = 1; i <= 75; i++) {
+      let letter = '';
+      if (i <= 15) letter = 'B';
+      else if (i <= 30) letter = 'I';
+      else if (i <= 45) letter = 'N';
+      else if (i <= 60) letter = 'G';
+      else letter = 'O';
+      wheelLabels.push(`${letter}${i}`);
     }
 
-    // Draw the bingo table
-    function drawTable(tableId) {
-      const table = document.getElementById(tableId);
-      table.innerHTML = '';
-      const header = document.createElement('tr');
-      ['B','I','N','G','O'].forEach(letter => {
-        const th = document.createElement('th');
-        th.textContent = letter;
-        header.appendChild(th);
-      });
-      table.appendChild(header);
+    const wheelCanvas = document.getElementById('wheel');
+    const ctx = wheelCanvas.getContext('2d');
+    const center = { x: wheelCanvas.width / 2, y: wheelCanvas.height / 2 };
+    const radius = 140;
+    const logoRadius = 56;
+    const pointerLength = 32;
+    const pointerWidth = 20;
 
-      for (let row = 0; row < 15; row++) {
+    let remainingNumbers = [...wheelLabels];
+    let pickedNumbers = []; // Strings like 'B1'
+    let highlightedNumbers = []; // Numbers like 1
+
+    let spinning = false;
+    let spinStart = null;
+    let spinDuration = 0;
+    let startAngle = 0;
+    let spinAngle = 0;
+    let finalAngle = 0;
+    let winnerIndex = null;
+    let winnerLabel = null;
+    let currentWheelAngle = 0;
+
+    // Local Storage keys
+    const LS_GAME = 'bingoGameState_v4';
+
+    // --- Table Draw ---
+    function drawTable() {
+      const table = document.getElementById('bingoTable');
+      table.innerHTML = '';
+      // Header
+      const thead = document.createElement('thead');
+      const tr = document.createElement('tr');
+      ['B', 'I', 'N', 'G', 'O'].forEach(l => {
+        const th = document.createElement('th');
+        th.textContent = l;
+        tr.appendChild(th);
+      });
+      thead.appendChild(tr);
+      table.appendChild(thead);
+
+      // Shortened: 8 rows only
+      const tbody = document.createElement('tbody');
+      for (let row = 0; row < 8; row++) {
         const tr = document.createElement('tr');
         for (let col = 0; col < 5; col++) {
-          const num = row + 1 + col * 15;
+          const num = col * 15 + row + 1;
+          if (num > 75) { tr.appendChild(document.createElement('td')); continue; }
           const td = document.createElement('td');
           td.textContent = num;
-          td.id = `cell-${num}`;
+          if (highlightedNumbers.includes(num)) {
+            td.classList.add('highlighted');
+          }
           tr.appendChild(td);
         }
-        table.appendChild(tr);
+        tbody.appendChild(tr);
       }
+      table.appendChild(tbody);
     }
 
-    // Roll a new number
-    function rollNumber() {
-      if (numbers.length === 0) return;
+    // --- Wheel Draw ---
+    function drawWheel(angle = 0, highlightIndex = null) {
+      ctx.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
 
-      const index = Math.floor(Math.random() * numbers.length);
-      selected = numbers[index];
+      // Draw slices
+      const sliceAngle = (2 * Math.PI) / remainingNumbers.length;
+      for (let i = 0; i < remainingNumbers.length; i++) {
+        const a0 = angle + i * sliceAngle;
+        const a1 = a0 + sliceAngle;
+        ctx.beginPath();
+        ctx.moveTo(center.x, center.y);
+        ctx.arc(center.x, center.y, radius, a0, a1, false);
+        ctx.closePath();
+        // Only white and grey colors
+        ctx.fillStyle = (i % 2 === 0) ? '#f7f7f7' : '#e0e0e0';
+        if (highlightIndex !== null && i === highlightIndex) {
+          ctx.fillStyle = '#ffd870';
+        }
+        ctx.fill();
+        ctx.strokeStyle = '#b9cbdf';
+        ctx.lineWidth = 1;
+        ctx.stroke();
 
-      const desktopDisplay = document.getElementById('desktopJackpotDisplay');
-      const mobileDisplay = document.getElementById('mobileJackpotDisplay');
-      
-      desktopDisplay.innerHTML = mobileDisplay.innerHTML = `<div class="spinner"></div>`;
-
-      setTimeout(() => {
-        const displayText = `${selected.letter}${selected.number}`;
-        desktopDisplay.textContent = mobileDisplay.textContent = displayText;
-        numbers.splice(index, 1);
-        highlightTable(selected.number);
-        saveState();
-      }, 2000);
-    }
-
-    // Highlight the called number
-    function highlightTable(num) {
-      const cells = document.querySelectorAll(`[id="cell-${num}"]`);
-      cells.forEach(cell => {
-        cell.classList.add('highlight', 'pulse');
-        setTimeout(() => {
-          cell.classList.remove('pulse');
-        }, 1000);
-      });
-    }
-
-    // Custom confirmation dialog
-    function showCustomConfirm(message, onConfirm) {
-      const overlay = document.createElement('div');
-      overlay.style.position = 'fixed';
-      overlay.style.top = 0;
-      overlay.style.left = 0;
-      overlay.style.width = '100%';
-      overlay.style.height = '100%';
-      overlay.style.background = 'rgba(0,0,0,0.5)';
-      overlay.style.display = 'flex';
-      overlay.style.alignItems = 'center';
-      overlay.style.justifyContent = 'center';
-      overlay.style.zIndex = 9999;
-
-      const box = document.createElement('div');
-      box.style.background = '#fff';
-      box.style.padding = '20px';
-      box.style.borderRadius = '10px';
-      box.style.textAlign = 'center';
-      box.style.width = '80%';
-      box.style.maxWidth = '400px';
-      box.innerHTML = `<p style="font-size: 24px; margin-bottom: 20px;">${message}</p>`;
-
-      const yesBtn = document.createElement('button');
-      yesBtn.textContent = 'Yes';
-      yesBtn.style.margin = '10px';
-      yesBtn.style.padding = '12px 24px';
-      yesBtn.style.fontSize = '20px';
-      yesBtn.onclick = () => { 
-        onConfirm(); 
-        document.body.removeChild(overlay); 
-      };
-
-      const noBtn = document.createElement('button');
-      noBtn.textContent = 'No';
-      noBtn.style.margin = '10px';
-      noBtn.style.padding = '12px 24px';
-      noBtn.style.fontSize = '20px';
-      noBtn.onclick = () => document.body.removeChild(overlay);
-
-      box.appendChild(yesBtn);
-      box.appendChild(noBtn);
-      overlay.appendChild(box);
-      document.body.appendChild(overlay);
-    }
-
-    // Confirm new game
-    function confirmNewGame() {
-      showCustomConfirm("Are you sure you want to start a new game? This will reset all progress.", newGame);
-    }
-
-    // Start new game
-    function newGame() {
-      localStorage.removeItem('bingoState');
-      initGame();
-      document.getElementById('desktopJackpotDisplay').textContent = '---';
-      document.getElementById('mobileJackpotDisplay').textContent = '---';
-    }
-
-    // Save game state
-    function saveState() {
-      const state = {
-        numbers: numbers,
-        highlighted: Array.from(document.querySelectorAll('.highlight')).map(c => c.id)
-      };
-      localStorage.setItem('bingoState', JSON.stringify(state));
-    }
-
-    // Restore game state
-    function restoreState() {
-      const state = JSON.parse(localStorage.getItem('bingoState'));
-      if (state) {
-        numbers = state.numbers;
-        drawTable('desktopBingoTable');
-        drawTable('mobileBingoTable');
-        state.highlighted.forEach(id => {
-          const cells = document.querySelectorAll(`[id="${id}"]`);
-          cells.forEach(cell => cell.classList.add('highlight'));
-        });
-      } else {
-        initGame();
+        // Text label
+        ctx.save();
+        ctx.translate(center.x, center.y);
+        ctx.rotate(a0 + sliceAngle / 2);
+        ctx.textAlign = 'center';
+        ctx.font = 'bold 13px Segoe UI, Arial';
+        ctx.fillStyle = '#2684ff';
+        ctx.shadowColor = '#fff';
+        ctx.shadowBlur = 3;
+        ctx.fillText(remainingNumbers[i], radius - 22, 5);
+        ctx.restore();
       }
-    }
 
-    // Initialize when page loads
-    window.onload = function() {
-      restoreState();
-      document.getElementById('desktopSpinButton').addEventListener('click', rollNumber);
-      document.getElementById('mobileSpinButton').addEventListener('click', rollNumber);
-    };
-  </script>
-
-<script>
-  const canvas = document.getElementById("wheel");
-  const ctx = canvas.getContext("2d");
-  const numbers = Array.from({ length: 75 }, (_, i) => i + 1);
-  const sliceAngle = (2 * Math.PI) / numbers.length;
-  let angle = 0;
-  let spinning = false;
-  const drawnNumbers = new Set();
-
-  function drawWheel(currentAngle) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (let i = 0; i < numbers.length; i++) {
-      const startAngle = currentAngle + i * sliceAngle;
-      const endAngle = startAngle + sliceAngle;
+      // Draw centre logo (clickable area)
       ctx.beginPath();
-      ctx.moveTo(200, 200);
-      ctx.arc(200, 200, 180, startAngle, endAngle);
-      ctx.fillStyle = i % 2 === 0 ? "#fdd835" : "#ff7043";
+      ctx.arc(center.x, center.y, logoRadius, 0, 2 * Math.PI);
+      ctx.fillStyle = '#fff';
+      ctx.fill();
+      ctx.strokeStyle = '#2684ff';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      // Logo image (SVG)
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(center.x, center.y, logoRadius - 4, 0, 2 * Math.PI);
+      ctx.clip();
+      const logoImg = new window.Image();
+      logoImg.onload = function() {
+        ctx.drawImage(logoImg, center.x - (logoRadius - 4), center.y - (logoRadius - 4), (logoRadius - 4) * 2, (logoRadius - 4) * 2);
+      };
+      logoImg.src = "data:image/svg+xml,%3Csvg width='102' height='102' viewBox='0 0 102 102' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cellipse cx='51' cy='51' rx='51' ry='51' fill='%23fff'%3E%3C/ellipse%3E%3Ccircle cx='51' cy='51' r='38' stroke='%232684ff' stroke-width='5' fill='none'/%3E%3Crect x='32' y='48' width='38' height='14' rx='7' fill='%23ff5544'/%3E%3Crect x='38' y='38' width='26' height='18' rx='6' fill='%23fff'%3E%3C/rect%3E%3Crect x='38' y='39' width='26' height='6' rx='3' fill='%23ff5544'/%3E%3C/svg%3E";
+      ctx.restore();
+
+      // Draw pointer at 3 o'clock (right)
+      ctx.save();
+      ctx.translate(center.x, center.y);
+      ctx.rotate(0); // 0 radians = rightwards (3 o'clock)
+      ctx.beginPath();
+      ctx.moveTo(radius + 4, 0);
+      ctx.lineTo(radius + pointerLength, -pointerWidth / 2);
+      ctx.lineTo(radius + pointerLength, pointerWidth / 2);
+      ctx.closePath();
+      ctx.fillStyle = '#bfc2c7';
+      ctx.strokeStyle = '#788295';
+      ctx.lineWidth = 2;
       ctx.fill();
       ctx.stroke();
-      ctx.save();
-      ctx.translate(200, 200);
-      ctx.rotate(startAngle + sliceAngle / 2);
-      ctx.textAlign = "right";
-      ctx.fillStyle = "#000";
-      ctx.font = "12px Arial";
-      ctx.fillText(numbers[i], 170, 5);
       ctx.restore();
     }
-  }
 
-  function updateTracker() {
-    const tracker = document.getElementById("tracker");
-    tracker.innerHTML = "";
-    for (let i = 1; i <= 75; i++) {
-      const cell = document.createElement("div");
-      cell.className = "cell";
-      cell.textContent = i;
-      if (drawnNumbers.has(i)) {
-        cell.classList.add("highlight");
-      }
-      tracker.appendChild(cell);
+    // --- Modal ---
+    function showModal(label, duration = 5000) {
+      const modalBg = document.getElementById('modal-bg');
+      const modalNum = document.getElementById('modal-number');
+      modalNum.innerHTML = `<span>${label}</span>`;
+      modalBg.style.display = 'flex';
+      setTimeout(hideModal, duration);
     }
-  }
+    function hideModal() {
+      document.getElementById('modal-bg').style.display = 'none';
+    }
 
-  function spinWheel() {
-    if (spinning) return;
-    spinning = true;
-    let duration = 5000;
-    let start = null;
-    let totalRotation = Math.random() * 360 + 360 * 5;
-    let finalAngle = angle + totalRotation * Math.PI / 180;
+    // --- Spin Logic ---
+    function startSpin() {
+      if (spinning || remainingNumbers.length === 0) return;
+      spinning = true;
+      spinStart = performance.now();
+      spinDuration = 5000 + Math.random() * 2000; // 5-7 seconds
+      startAngle = currentWheelAngle; // Start at last wheel position
+      spinAngle = 0;
+      winnerIndex = null;
+      winnerLabel = null;
+      animateSpin();
+    }
 
-    function animate(timestamp) {
-      if (!start) start = timestamp;
-      let elapsed = timestamp - start;
-      let progress = Math.min(elapsed / duration, 1);
-      let easeOut = 1 - Math.pow(1 - progress, 3);
-      angle = finalAngle * easeOut;
-      drawWheel(angle);
-      if (progress < 1) {
-        requestAnimationFrame(animate);
+    function animateSpin() {
+      const now = performance.now();
+      const elapsed = now - spinStart;
+      // 120 RPM = 2 rotations/sec = 2*2PI rad/sec
+      const totalRotations = 2 * (spinDuration / 1000); // 2 rotations per sec
+      // Ease-out cubic
+      const t = Math.min(elapsed / spinDuration, 1);
+      const ease = 1 - Math.pow(1 - t, 3);
+      spinAngle = startAngle + totalRotations * 2 * Math.PI * ease;
+
+      drawWheel(spinAngle);
+
+      if (t < 1) {
+        requestAnimationFrame(animateSpin);
       } else {
+        currentWheelAngle = spinAngle % (2 * Math.PI);
+        // Pointer is at 0 radians (rightwards)
+        const pointerAngle = (0 - spinAngle + 2 * Math.PI) % (2 * Math.PI);
+        const sliceAngle = (2 * Math.PI) / remainingNumbers.length;
+        let idx = Math.floor(pointerAngle / sliceAngle);
+        if (idx < 0) idx += remainingNumbers.length;
+        winnerIndex = idx % remainingNumbers.length;
+        winnerLabel = remainingNumbers[winnerIndex];
+
+        // Highlight the slice
+        drawWheel(currentWheelAngle, winnerIndex);
+
+        // Show number in popup for 5 secs
+        setTimeout(() => {
+          showModal(winnerLabel, 5000);
+          // After 5 secs, proceed to pick number
+          setTimeout(() => {
+            pickNumber();
+          }, 5000);
+        }, 700);
+
         spinning = false;
-        const selectedIndex = Math.floor(((2 * Math.PI - (angle % (2 * Math.PI))) / sliceAngle)) % numbers.length;
-        const selectedNumber = numbers[selectedIndex];
-        drawnNumbers.add(selectedNumber);
-        document.getElementById("result").textContent = `🎉 Number: ${selectedNumber} 🎉`;
-        updateTracker();
       }
     }
 
-    requestAnimationFrame(animate);
-  }
+    // --- Table Highlighting ---
+    function getNumberFromLabel(label) {
+      return parseInt(label.slice(1));
+    }
 
-  drawWheel(angle);
-  updateTracker();
-</script>
+    // --- Pick and Remove Number ---
+    function pickNumber() {
+      if (winnerIndex === null || winnerLabel === null) return;
+      pickedNumbers.push(winnerLabel);
+      const num = getNumberFromLabel(winnerLabel);
+      highlightedNumbers.push(num);
+      // Remove from wheel
+      remainingNumbers.splice(winnerIndex, 1);
+      saveState();
+      drawTable();
+      drawWheel(currentWheelAngle);
+      winnerIndex = null;
+      winnerLabel = null;
+    }
+
+    // --- New Game ---
+    function resetGame() {
+      remainingNumbers = [...wheelLabels];
+      pickedNumbers = [];
+      highlightedNumbers = [];
+      winnerIndex = null;
+      winnerLabel = null;
+      currentWheelAngle = 0;
+      saveState();
+      drawTable();
+      drawWheel(currentWheelAngle);
+    }
+
+    // --- State Persistence ---
+    function saveState() {
+      const state = {
+        remainingNumbers,
+        pickedNumbers,
+        highlightedNumbers,
+        currentWheelAngle
+      };
+      localStorage.setItem(LS_GAME, JSON.stringify(state));
+    }
+    function loadState() {
+      const str = localStorage.getItem(LS_GAME);
+      if (!str) return false;
+      try {
+        const state = JSON.parse(str);
+        if (
+          Array.isArray(state.remainingNumbers) &&
+          Array.isArray(state.pickedNumbers) &&
+          Array.isArray(state.highlightedNumbers)
+        ) {
+          remainingNumbers = state.remainingNumbers;
+          pickedNumbers = state.pickedNumbers;
+          highlightedNumbers = state.highlightedNumbers;
+          currentWheelAngle = state.currentWheelAngle || 0;
+          return true;
+        }
+      } catch { }
+      return false;
+    }
+
+    // --- Event Listeners ---
+    wheelCanvas.addEventListener('click', function(e) {
+      // Only spin if click is inside the logo circle
+      const rect = wheelCanvas.getBoundingClientRect();
+      const x = e.clientX - rect.left - center.x;
+      const y = e.clientY - rect.top - center.y;
+      if (Math.sqrt(x * x + y * y) <= logoRadius) {
+        startSpin();
+      }
+    });
+
+    document.getElementById('newGameBtn').addEventListener('click', function() {
+      if (confirm('Start a new game? This will reset the wheel and table.')) {
+        resetGame();
+      }
+    });
+
+    // --- Initial Load ---
+    function init() {
+      if (!loadState()) {
+        resetGame();
+      } else {
+        drawTable();
+        drawWheel(currentWheelAngle);
+      }
+    }
+    init();
+  </script>
 </body>
 </html>
