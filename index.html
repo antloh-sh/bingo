@@ -37,7 +37,7 @@
       padding: 18px 0 0 0;
     }
     .wheel-section {
-      flex: 0 0 340px;
+      flex: 0 0 500px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -48,6 +48,11 @@
       border-radius: 50%;
       box-shadow: 0 2px 8px rgba(50,60,80,0.10);
       background: #f3f7fa;
+      width: 480px;
+      height: 480px;
+      max-width: 100%;
+      max-height: 100%;
+      display: block;
     }
     .actions {
       text-align: center;
@@ -126,7 +131,6 @@
       align-items: center;
       justify-content: center;
       height: 180px;
-      /* Vertically and horizontally center modal content */
     }
     .modal h2 {
       flex: 1;
@@ -146,6 +150,7 @@
       .bingo-layout { flex-direction: column; gap: 0; }
       .table-section, .wheel-section { margin: 0 auto; }
       .bingo-title { margin-left: 0; text-align:center;}
+      .wheel-canvas { width: 98vw; height: auto;}
     }
   </style>
 </head>
@@ -154,7 +159,7 @@
     <div class="bingo-title">BINGO</div>
     <div class="bingo-layout">
       <div class="wheel-section">
-        <canvas id="wheel" width="320" height="320" class="wheel-canvas" title="Spin the wheel"></canvas>
+        <canvas id="wheel" width="480" height="480" class="wheel-canvas" title="Spin the wheel"></canvas>
         <div class="actions">
           <button id="newGameBtn" class="btn">New Game</button>
         </div>
@@ -188,10 +193,10 @@
     const wheelCanvas = document.getElementById('wheel');
     const ctx = wheelCanvas.getContext('2d');
     const center = { x: wheelCanvas.width / 2, y: wheelCanvas.height / 2 };
-    const radius = 140;
-    const logoRadius = 56;
-    const pointerLength = 32;
-    const pointerWidth = 20;
+    const radius = 210;
+    const logoRadius = 80;
+    const pointerLength = 56;
+    const pointerWidth = 32;
 
     let remainingNumbers = [...wheelLabels];
     let pickedNumbers = []; // Strings like 'B1'
@@ -267,16 +272,16 @@
         ctx.lineWidth = 1;
         ctx.stroke();
 
-        // Text label
+        // Text label (smaller, non-bold font)
         ctx.save();
         ctx.translate(center.x, center.y);
         ctx.rotate(a0 + sliceAngle / 2);
         ctx.textAlign = 'center';
-        ctx.font = 'bold 13px Segoe UI, Arial';
+        ctx.font = '12px Segoe UI, Arial';
         ctx.fillStyle = '#2684ff';
         ctx.shadowColor = '#fff';
-        ctx.shadowBlur = 3;
-        ctx.fillText(remainingNumbers[i], radius - 22, 5);
+        ctx.shadowBlur = 2;
+        ctx.fillText(remainingNumbers[i], radius - 18, 4);
         ctx.restore();
       }
 
