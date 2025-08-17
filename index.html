@@ -175,8 +175,9 @@
     </div>
   </div>
 
-  <!-- Sound effect -->
-  <audio id="blip" src="blip.wav" preload="auto"></audio>
+  <!-- Sound effects -->
+  <audio id="blip" src="blip.mp3" preload="auto"></audio>
+  <audio id="bell" src="bell.wav" preload="auto"></audio>
 
   <script>
     // Bingo numbers B1-B15, I16-I30, N31-N45, G46-G60, O61-O75
@@ -215,8 +216,9 @@
     let winnerLabel = null;
     let currentWheelAngle = 0;
 
-    // Sound effect
+    // Sound effects
     const blipAudio = document.getElementById('blip');
+    const bellAudio = document.getElementById('bell');
 
     // Local Storage keys
     const LS_GAME = 'bingoGameState_v4';
@@ -334,6 +336,11 @@
       const modalNum = document.getElementById('modal-number');
       modalNum.innerHTML = `<span style="width:100%;display:flex;align-items:center;justify-content:center;height:100%;">${label}</span>`;
       modalBg.style.display = 'flex';
+      // Play bell sound when number is shown
+      try {
+        bellAudio.currentTime = 0;
+        bellAudio.play();
+      } catch(e) {}
       setTimeout(hideModal, duration);
     }
     function hideModal() {
@@ -372,7 +379,6 @@
 
       if (lastPlayedSlice !== null && idx !== lastPlayedSlice) {
         // Play the blip sound for each new slice crossing the arrow
-        // Reset if already playing for rapid spins
         try {
           blipAudio.currentTime = 0;
           blipAudio.play();
