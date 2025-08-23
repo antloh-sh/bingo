@@ -110,6 +110,12 @@
       font-weight: bold;
       border-color: #f3c200;
     }
+    .last-highlighted {
+      background: #4cd964 !important; /* green */
+      color: #fff !important;
+      font-weight: bold;
+      border-color: #2ec027;
+    }
     .modal-bg {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -215,6 +221,7 @@
     let winnerIndex = null;
     let winnerLabel = null;
     let currentWheelAngle = 0;
+    let lastDrawnNumber = null;
 
     // Sound effects
     const blipAudio = document.getElementById('blip');
@@ -230,7 +237,7 @@
     };
 
     // Local Storage keys
-    const LS_GAME = 'bingoGameState_v4';
+    const LS_GAME = 'bingoGameState_v5';
 
     // --- Table Draw ---
     function drawTable() {
@@ -257,7 +264,11 @@
           const td = document.createElement('td');
           td.textContent = num;
           if (highlightedNumbers.includes(num)) {
-            td.classList.add('highlighted');
+            if (lastDrawnNumber === num) {
+              td.classList.add('last-highlighted');
+            } else {
+              td.classList.add('highlighted');
+            }
           }
           tr.appendChild(td);
         }
@@ -426,6 +437,7 @@
       pickedNumbers.push(winnerLabel);
       const num = getNumberFromLabel(winnerLabel);
       highlightedNumbers.push(num);
+      lastDrawnNumber = num;
       remainingNumbers.splice(winnerIndex, 1);
       saveState();
       drawTable();
@@ -442,6 +454,7 @@
       winnerIndex = null;
       winnerLabel = null;
       currentWheelAngle = 0;
+      lastDrawnNumber = null;
       saveState();
       drawTable();
       drawWheel(currentWheelAngle);
@@ -453,7 +466,8 @@
         remainingNumbers,
         pickedNumbers,
         highlightedNumbers,
-        currentWheelAngle
+        currentWheelAngle,
+        lastDrawnNumber
       };
       localStorage.setItem(LS_GAME, JSON.stringify(state));
     }
@@ -471,6 +485,7 @@
           pickedNumbers = state.pickedNumbers;
           highlightedNumbers = state.highlightedNumbers;
           currentWheelAngle = state.currentWheelAngle || 0;
+          lastDrawnNumber = state.lastDrawnNumber || null;
           return true;
         }
       } catch { }
