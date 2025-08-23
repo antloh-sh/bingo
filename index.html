@@ -495,8 +495,11 @@
     // --- Event Listeners ---
     wheelCanvas.addEventListener('click', function(e) {
       const rect = wheelCanvas.getBoundingClientRect();
-      const x = e.clientX - rect.left - center.x;
-      const y = e.clientY - rect.top - center.y;
+      // Calculate scale factor between CSS size and canvas size
+      const scaleX = wheelCanvas.width / rect.width;
+      const scaleY = wheelCanvas.height / rect.height;
+      const x = (e.clientX - rect.left) * scaleX - center.x;
+      const y = (e.clientY - rect.top) * scaleY - center.y;
       if (Math.sqrt(x * x + y * y) <= logoRadius) {
         startSpin();
       }
