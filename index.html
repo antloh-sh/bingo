@@ -292,26 +292,26 @@
         ctx.restore();
       }
 
-      // Draw centre logo (clickable area)
-      ctx.beginPath();
-      ctx.arc(center.x, center.y, logoRadius, 0, 2 * Math.PI);
-      ctx.fillStyle = '#fff';
-      ctx.fill();
-      ctx.strokeStyle = '#2684ff';
-      ctx.lineWidth = 3;
-      ctx.stroke();
-
-      // Draw the uploaded round transparent logo.png in the center
+      // Draw centre logo (clickable area) - spinning with the wheel
       ctx.save();
+      ctx.translate(center.x, center.y);
+      ctx.rotate(angle); // spin the logo with the wheel
       ctx.beginPath();
-      ctx.arc(center.x, center.y, logoRadius - 4, 0, 2 * Math.PI);
+      ctx.arc(0, 0, logoRadius - 4, 0, 2 * Math.PI);
       ctx.clip();
       const logoImg = new window.Image();
       logoImg.onload = function() {
-        ctx.drawImage(logoImg, center.x - (logoRadius - 4), center.y - (logoRadius - 4), (logoRadius - 4) * 2, (logoRadius - 4) * 2);
+        ctx.drawImage(logoImg, -(logoRadius - 4), -(logoRadius - 4), (logoRadius - 4) * 2, (logoRadius - 4) * 2);
       };
       logoImg.src = "logo.png";
       ctx.restore();
+
+      // Draw border for logo area (not spinning)
+      ctx.beginPath();
+      ctx.arc(center.x, center.y, logoRadius, 0, 2 * Math.PI);
+      ctx.strokeStyle = '#2684ff';
+      ctx.lineWidth = 3;
+      ctx.stroke();
 
       // Draw pointer at 3 o'clock (right)
       ctx.save();
