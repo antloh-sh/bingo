@@ -1,3 +1,4 @@
+```html name=index.html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -220,6 +221,12 @@
     const blipAudio = document.getElementById('blip');
     const bellAudio = document.getElementById('bell');
 
+    // Preload logo image ONCE
+    const logoImg = new window.Image();
+    logoImg.src = "logo.png";
+    let logoLoaded = false;
+    logoImg.onload = function() { logoLoaded = true; };
+
     // Local Storage keys
     const LS_GAME = 'bingoGameState_v4';
 
@@ -292,18 +299,16 @@
         ctx.restore();
       }
 
-      // Draw centre logo (clickable area) - spinning with the wheel
+      // Draw centre logo (spinning with the wheel)
       ctx.save();
       ctx.translate(center.x, center.y);
       ctx.rotate(angle); // spin the logo with the wheel
       ctx.beginPath();
       ctx.arc(0, 0, logoRadius - 4, 0, 2 * Math.PI);
       ctx.clip();
-      const logoImg = new window.Image();
-      logoImg.onload = function() {
+      if (logoLoaded) {
         ctx.drawImage(logoImg, -(logoRadius - 4), -(logoRadius - 4), (logoRadius - 4) * 2, (logoRadius - 4) * 2);
-      };
-      logoImg.src = "logo.png";
+      }
       ctx.restore();
 
       // Draw border for logo area (not spinning)
@@ -499,3 +504,4 @@
   </script>
 </body>
 </html>
+```
