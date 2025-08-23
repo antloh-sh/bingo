@@ -1,4 +1,3 @@
-```html name=index.html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -225,7 +224,10 @@
     const logoImg = new window.Image();
     logoImg.src = "logo.png";
     let logoLoaded = false;
-    logoImg.onload = function() { logoLoaded = true; };
+    logoImg.onload = function() {
+      logoLoaded = true;
+      drawWheel(currentWheelAngle); // Ensures logo is drawn as soon as loaded
+    };
 
     // Local Storage keys
     const LS_GAME = 'bingoGameState_v4';
@@ -497,7 +499,7 @@
         resetGame();
       } else {
         drawTable();
-        drawWheel(currentWheelAngle);
+        drawWheel(currentWheelAngle); // Initial draw (may be before logo loads)
       }
     }
     init();
