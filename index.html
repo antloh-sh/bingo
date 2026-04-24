@@ -7,201 +7,219 @@
   <style>
     body {
       font-family: 'Segoe UI', Arial, sans-serif;
-      background: #f8f9fb;
+      background: #f0f4f8;
       margin: 0;
       padding: 0;
-    }
-    .container {
-      max-width: 900px;
-      margin: 32px auto;
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 2px 16px rgba(0,0,0,0.08);
-      padding: 32px;
-      border: 1px solid #2684ff;
-    }
-    .bingo-header {
+      height: 100vh;
       display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      margin-bottom: 12px;
-      gap: 16px;
+      overflow: hidden;
     }
-    .bingo-title {
-      font-size: 1.7rem;
-      font-weight: bold;
-      letter-spacing: 0.05em;
-      margin-left: 0;
-      text-align: left;
-    }
-    .btn {
-      font-size: 1rem;
-      padding: 10px 24px;
-      border-radius: 6px;
+
+    /* Sidebar for Controls */
+    .sidebar {
+      width: 200px;
       background: #2684ff;
-      color: #fff;
-      border: none;
-      cursor: pointer;
-      box-shadow: 0 1px 6px rgba(50,60,80,0.12);
-      transition: background 0.18s;
-      margin-left: 8px;
-      margin-top: 0;
-    }
-    .btn:hover {
-      background: #1765b2;
-    }
-    .bingo-layout {
+      color: white;
+      padding: 24px;
       display: flex;
-      flex-direction: row;
-      gap: 36px;
-      align-items: flex-start;
-      justify-content: flex-start;
-      padding: 18px 0 0 0;
+      flex-direction: column;
+      gap: 20px;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.1);
     }
-    .wheel-section {
-      flex: 0 0 500px;
+
+    .bingo-title {
+      font-size: 2rem;
+      font-weight: bold;
+      text-align: center;
+      border-bottom: 2px solid rgba(255,255,255,0.3);
+      padding-bottom: 10px;
+    }
+
+    /* Main Display Area */
+    .main-content {
+      flex: 1;
+      display: flex;
+      padding: 20px;
+      gap: 20px;
+      align-items: center;
+    }
+
+    /* History Column (Center) */
+    .history-section {
+      flex: 0 0 180px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin-left: 40px;
+      justify-content: center;
+      gap: 20px;
+      background: #fff;
+      height: 90%;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
+
+    .history-label {
+      font-size: 0.9rem;
+      color: #788295;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .number-box {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      font-weight: bold;
+      border: 4px solid #eee;
+    }
+
+    .num-current {
+      width: 130px;
+      height: 130px;
+      background: #4cd964;
+      color: white;
+      font-size: 4rem;
+      border-color: #2ec027;
+      box-shadow: 0 0 20px rgba(76, 217, 100, 0.4);
+    }
+
+    .num-prev {
+      background: #f8f9fb;
+      color: #2684ff;
+      opacity: 0.8;
+    }
+
+    /* Wheel & Table Area */
+    .game-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .wheel-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
     .wheel-canvas {
       cursor: pointer;
-      border-radius: 50%;
-      box-shadow: 0 2px 8px rgba(50,60,80,0.10);
-      background: #f3f7fa;
-      width: 480px;
-      height: 480px;
-      max-width: 100%;
-      max-height: 100%;
-      display: block;
+      max-height: 70vh;
+      width: auto;
     }
+
     .table-section {
-      flex: 1 0 220px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-right: 40px;
+      background: #fff;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     }
+
     .bingo-table {
       border-collapse: collapse;
-      margin-bottom: 16px;
-      background: #f9fafc;
-      border-radius: 6px;
-      overflow: hidden;
-      box-shadow: 0 1px 8px rgba(0,0,0,0.04);
-      min-width: 210px;
+      width: 100%;
     }
+
     .bingo-table th, .bingo-table td {
-      border: 1px solid #b9cbdf;
-      padding: 3px 7px !important;
+      border: 1px solid #dee5ed;
+      padding: 6px 12px;
       text-align: center;
-      font-size: 0.95rem !important;
-      min-width: 24px;
+      font-size: 1.1rem;
     }
+
     .bingo-table th {
       background: #2684ff;
-      color: #fff;
-      font-weight: bold;
-      font-size: 1.1rem;
-      letter-spacing: 0.04em;
+      color: white;
     }
-    .highlighted {
-      background: #ffd870 !important;
-      color: #222 !important;
+
+    .highlighted { background: #ffd870 !important; font-weight: bold; }
+    .last-highlighted { background: #4cd964 !important; color: white !important; font-weight: bold; }
+
+    .btn {
+      padding: 12px;
+      border-radius: 8px;
+      background: #fff;
+      color: #2684ff;
+      border: none;
       font-weight: bold;
-      border-color: #f3c200;
+      cursor: pointer;
+      transition: all 0.2s;
     }
-    .last-highlighted {
-      background: #4cd964 !important;
-      color: #fff !important;
-      font-weight: bold;
-      border-color: #2ec027;
-    }
+
+    .btn:hover { background: #e0e0e0; }
+
+    /* Modal Styling */
     .modal-bg {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.17);
-      display: flex;
+      background: rgba(0,0,0,0.4);
+      display: none;
       align-items: center;
       justify-content: center;
       z-index: 1000;
     }
+
     .modal {
       background: #fff;
-      padding: 32px 40px;
-      border-radius: 14px;
-      box-shadow: 0 2px 32px rgba(0,0,0,0.19);
-      min-width: 240px;
-      border: 2px solid #ffd870;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 180px;
-    }
-    .modal h2 {
-      flex: 1;
-      font-size: 3.3rem;
-      margin: 0;
-      color: #174bb2;
-      letter-spacing: 0.05em;
-      width: 100%;
+      padding: 50px;
+      border-radius: 20px;
       text-align: center;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
+      border: 5px solid #ffd870;
     }
-    @media (max-width: 900px) {
-      .container { max-width: 100vw; }
-      .bingo-layout { flex-direction: column; gap: 0; }
-      .table-section, .wheel-section { margin: 0 auto; }
-      .bingo-header { flex-direction: column; align-items: flex-start; gap: 0;}
-      .bingo-title { text-align:center;}
-      .wheel-canvas { width: 98vw; height: auto;}
-      .btn { margin-left: 0; margin-top: 10px;}
-    }
+
+    .modal h2 { font-size: 8rem; margin: 0; color: #174bb2; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="bingo-header">
-      <div class="bingo-title">BINGO</div>
-      <button id="newGameBtn" class="btn">New Game</button>
+  
+  <div class="sidebar">
+    <div class="bingo-title">BINGO</div>
+    <button id="newGameBtn" class="btn">New Game</button>
+    <p style="font-size: 0.8rem; margin-top: auto; opacity: 0.8;">Click the center of the wheel to spin!</p>
+  </div>
+
+  <div class="main-content">
+    <div class="history-section">
+      <span class="history-label">Previous</span>
+      <div id="hist-2" class="number-box num-prev">-</div>
+      <div id="hist-1" class="number-box num-prev">-</div>
+      <span class="history-label" style="color: #4cd964; font-weight: bold;">Current</span>
+      <div id="hist-0" class="number-box num-current">-</div>
     </div>
-    <div class="bingo-layout">
-      <div class="wheel-section">
-        <canvas id="wheel" width="480" height="480" class="wheel-canvas" title="Spin the wheel"></canvas>
+
+    <div class="game-section">
+      <div class="wheel-container">
+        <canvas id="wheel" width="480" height="480" class="wheel-canvas"></canvas>
       </div>
       <div class="table-section">
         <table id="bingoTable" class="bingo-table"></table>
       </div>
     </div>
   </div>
-  <div id="modal-bg" class="modal-bg" style="display:none;">
+
+  <div id="modal-bg" class="modal-bg">
     <div class="modal">
       <h2 id="modal-number"></h2>
     </div>
   </div>
 
-  <!-- Sound effects -->
   <audio id="blip" src="blip.wav" preload="auto"></audio>
   <audio id="bell" src="bell.wav" preload="auto"></audio>
 
   <script>
-    // Bingo numbers B1-B15, I16-I30, N31-N45, G46-G60, O61-O75
     const bingoNumbers = [];
     for (let i = 1; i <= 75; i++) bingoNumbers.push(i);
 
     const wheelLabels = [];
     for (let i = 1; i <= 75; i++) {
-      let letter = '';
-      if (i <= 15) letter = 'B';
-      else if (i <= 30) letter = 'I';
-      else if (i <= 45) letter = 'N';
-      else if (i <= 60) letter = 'G';
-      else letter = 'O';
+      let letter = i <= 15 ? 'B' : i <= 30 ? 'I' : i <= 45 ? 'N' : i <= 60 ? 'G' : 'O';
       wheelLabels.push(`${letter}${i}`);
     }
 
@@ -210,8 +228,6 @@
     const center = { x: wheelCanvas.width / 2, y: wheelCanvas.height / 2 };
     const radius = 210;
     const logoRadius = 80;
-    const pointerLength = 56;
-    const pointerWidth = 32;
 
     let remainingNumbers = [...wheelLabels];
     let pickedNumbers = [];
@@ -220,59 +236,50 @@
     let spinStart = null;
     let spinDuration = 0;
     let startAngle = 0;
-    let spinAngle = 0;
-    let finalAngle = 0;
-    let winnerIndex = null;
-    let winnerLabel = null;
     let currentWheelAngle = 0;
     let lastDrawnNumber = null;
+    let winnerIndex = null;
+    let winnerLabel = null;
 
-    // Sound effects
     const blipAudio = document.getElementById('blip');
     const bellAudio = document.getElementById('bell');
-
-    // Preload logo image ONCE
     const logoImg = new window.Image();
     logoImg.src = "logo.png";
     let logoLoaded = false;
-    logoImg.onload = function() {
-      logoLoaded = true;
-      drawWheel(currentWheelAngle); // Ensures logo is drawn as soon as loaded
-    };
+    logoImg.onload = () => { logoLoaded = true; drawWheel(currentWheelAngle); };
 
-    // Local Storage keys
     const LS_GAME = 'bingoGameState_v5';
 
-    // --- Table Draw ---
+    function updateHistoryDisplay() {
+      // pickedNumbers is an array of labels like "B5", "I20"
+      const reversed = [...pickedNumbers].reverse();
+      document.getElementById('hist-0').textContent = reversed[0] || '-';
+      document.getElementById('hist-1').textContent = reversed[1] || '-';
+      document.getElementById('hist-2').textContent = reversed[2] || '-';
+    }
+
     function drawTable() {
       const table = document.getElementById('bingoTable');
       table.innerHTML = '';
-      // Header
       const thead = document.createElement('thead');
-      const tr = document.createElement('tr');
+      const trHead = document.createElement('tr');
       ['B', 'I', 'N', 'G', 'O'].forEach(l => {
         const th = document.createElement('th');
         th.textContent = l;
-        tr.appendChild(th);
+        trHead.appendChild(th);
       });
-      thead.appendChild(tr);
+      thead.appendChild(trHead);
       table.appendChild(thead);
 
-      // 15 rows, numbers 1-75
       const tbody = document.createElement('tbody');
       for (let row = 0; row < 15; row++) {
         const tr = document.createElement('tr');
         for (let col = 0; col < 5; col++) {
           const num = col * 15 + row + 1;
-          if (num > 75) { tr.appendChild(document.createElement('td')); continue; }
           const td = document.createElement('td');
           td.textContent = num;
           if (highlightedNumbers.includes(num)) {
-            if (lastDrawnNumber === num) {
-              td.classList.add('last-highlighted');
-            } else {
-              td.classList.add('highlighted');
-            }
+            td.classList.add(lastDrawnNumber === num ? 'last-highlighted' : 'highlighted');
           }
           tr.appendChild(td);
         }
@@ -281,11 +288,8 @@
       table.appendChild(tbody);
     }
 
-    // --- Wheel Draw ---
     function drawWheel(angle = 0, highlightIndex = null) {
       ctx.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
-
-      // Draw slices
       const sliceAngle = (2 * Math.PI) / remainingNumbers.length;
       for (let i = 0; i < remainingNumbers.length; i++) {
         const a0 = angle + i * sliceAngle;
@@ -293,120 +297,58 @@
         ctx.beginPath();
         ctx.moveTo(center.x, center.y);
         ctx.arc(center.x, center.y, radius, a0, a1, false);
-        ctx.closePath();
         ctx.fillStyle = (i % 2 === 0) ? '#f7f7f7' : '#e0e0e0';
-        if (highlightIndex !== null && i === highlightIndex) {
-          ctx.fillStyle = '#ffd870';
-        }
+        if (highlightIndex !== null && i === highlightIndex) ctx.fillStyle = '#ffd870';
         ctx.fill();
         ctx.strokeStyle = '#b9cbdf';
-        ctx.lineWidth = 1;
         ctx.stroke();
 
-        // Text label (smaller, non-bold font)
         ctx.save();
         ctx.translate(center.x, center.y);
         ctx.rotate(a0 + sliceAngle / 2);
         ctx.textAlign = 'center';
-        ctx.font = '12px Segoe UI, Arial';
+        ctx.font = '12px Segoe UI';
         ctx.fillStyle = '#2684ff';
-        ctx.shadowColor = '#fff';
-        ctx.shadowBlur = 2;
         ctx.fillText(remainingNumbers[i], radius - 18, 4);
         ctx.restore();
       }
 
-      // Draw centre logo (spinning with the wheel)
       ctx.save();
       ctx.translate(center.x, center.y);
-      ctx.rotate(angle); // spin the logo with the wheel
+      ctx.rotate(angle);
       ctx.beginPath();
       ctx.arc(0, 0, logoRadius - 4, 0, 2 * Math.PI);
       ctx.clip();
-      if (logoLoaded) {
-        ctx.drawImage(logoImg, -(logoRadius - 4), -(logoRadius - 4), (logoRadius - 4) * 2, (logoRadius - 4) * 2);
-      }
+      if (logoLoaded) ctx.drawImage(logoImg, -(logoRadius - 4), -(logoRadius - 4), (logoRadius - 4) * 2, (logoRadius - 4) * 2);
       ctx.restore();
 
-      // Draw border for logo area (not spinning)
       ctx.beginPath();
       ctx.arc(center.x, center.y, logoRadius, 0, 2 * Math.PI);
       ctx.strokeStyle = '#2684ff';
       ctx.lineWidth = 3;
       ctx.stroke();
-
-      // Draw pointer at 3 o'clock (right)
-      ctx.save();
-      ctx.translate(center.x, center.y);
-      ctx.rotate(0); // 0 radians = rightwards (3 o'clock)
-      ctx.beginPath();
-      ctx.moveTo(radius + 4, 0);
-      ctx.lineTo(radius + pointerLength, -pointerWidth / 2);
-      ctx.lineTo(radius + pointerLength, pointerWidth / 2);
-      ctx.closePath();
-      ctx.fillStyle = '#bfc2c7';
-      ctx.strokeStyle = '#788295';
-      ctx.lineWidth = 2;
-      ctx.fill();
-      ctx.stroke();
-      ctx.restore();
     }
 
-    // --- Modal ---
-    function showModal(label, duration = 5000) {
-      const modalBg = document.getElementById('modal-bg');
-      const modalNum = document.getElementById('modal-number');
-      modalNum.innerHTML = `<span style="width:100%;display:flex;align-items:center;justify-content:center;height:100%;">${label}</span>`;
-      modalBg.style.display = 'flex';
-      // Play bell sound when number is shown
-      try {
-        bellAudio.currentTime = 0;
-        bellAudio.play();
-      } catch(e) {}
-      setTimeout(hideModal, duration);
-    }
-    function hideModal() {
-      document.getElementById('modal-bg').style.display = 'none';
-    }
-
-    // --- Spin Logic with Sound Effect ---
-    let lastPlayedSlice = null;
     function startSpin() {
       if (spinning || remainingNumbers.length === 0) return;
       spinning = true;
       spinStart = performance.now();
-      spinDuration = 5000 + Math.random() * 2000; // 5-7 seconds
-      startAngle = currentWheelAngle; // Start at last wheel position
-      spinAngle = 0;
-      winnerIndex = null;
-      winnerLabel = null;
-      lastPlayedSlice = null;
+      spinDuration = 5000 + Math.random() * 2000;
+      startAngle = currentWheelAngle;
       animateSpin();
     }
 
     function animateSpin() {
       const now = performance.now();
       const elapsed = now - spinStart;
-      const totalRotations = 2 * (spinDuration / 1000); // 120 RPM = 2 rotations/sec
       const t = Math.min(elapsed / spinDuration, 1);
       const ease = 1 - Math.pow(1 - t, 3);
-      spinAngle = startAngle + totalRotations * 2 * Math.PI * ease;
+      const spinAngle = startAngle + (20 * Math.PI * ease);
 
-      // Sound effect: detect if the slice under the arrow changed since last frame
       const pointerAngle = (0 - spinAngle + 2 * Math.PI) % (2 * Math.PI);
       const sliceAngle = (2 * Math.PI) / remainingNumbers.length;
-      let idx = Math.floor(pointerAngle / sliceAngle);
+      let idx = Math.floor(pointerAngle / sliceAngle) % remainingNumbers.length;
       if (idx < 0) idx += remainingNumbers.length;
-      idx = idx % remainingNumbers.length;
-
-      if (lastPlayedSlice !== null && idx !== lastPlayedSlice) {
-        // Play the blip sound for each new slice crossing the arrow
-        try {
-          blipAudio.currentTime = 0;
-          blipAudio.play();
-        } catch (e) {}
-      }
-      lastPlayedSlice = idx;
 
       drawWheel(spinAngle);
 
@@ -416,115 +358,82 @@
         currentWheelAngle = spinAngle % (2 * Math.PI);
         winnerIndex = idx;
         winnerLabel = remainingNumbers[winnerIndex];
-
         drawWheel(currentWheelAngle, winnerIndex);
-
+        
         setTimeout(() => {
-          showModal(winnerLabel, 5000);
+          const modalBg = document.getElementById('modal-bg');
+          document.getElementById('modal-number').textContent = winnerLabel;
+          modalBg.style.display = 'flex';
+          try { bellAudio.play(); } catch(e){}
+          
           setTimeout(() => {
+            modalBg.style.display = 'none';
             pickNumber();
-          }, 5000);
+            spinning = false;
+          }, 4000);
         }, 700);
-
-        spinning = false;
       }
     }
 
-    // --- Table Highlighting ---
-    function getNumberFromLabel(label) {
-      return parseInt(label.slice(1));
-    }
-
-    // --- Pick and Remove Number ---
     function pickNumber() {
-      if (winnerIndex === null || winnerLabel === null) return;
+      if (winnerIndex === null) return;
       pickedNumbers.push(winnerLabel);
-      const num = getNumberFromLabel(winnerLabel);
+      const num = parseInt(winnerLabel.slice(1));
       highlightedNumbers.push(num);
       lastDrawnNumber = num;
       remainingNumbers.splice(winnerIndex, 1);
       saveState();
       drawTable();
+      updateHistoryDisplay();
       drawWheel(currentWheelAngle);
-      winnerIndex = null;
-      winnerLabel = null;
     }
 
-    // --- New Game ---
     function resetGame() {
       remainingNumbers = [...wheelLabels];
       pickedNumbers = [];
       highlightedNumbers = [];
-      winnerIndex = null;
-      winnerLabel = null;
-      currentWheelAngle = 0;
       lastDrawnNumber = null;
+      currentWheelAngle = 0;
       saveState();
       drawTable();
-      drawWheel(currentWheelAngle);
+      updateHistoryDisplay();
+      drawWheel(0);
     }
 
-    // --- State Persistence ---
     function saveState() {
-      const state = {
-        remainingNumbers,
-        pickedNumbers,
-        highlightedNumbers,
-        currentWheelAngle,
-        lastDrawnNumber
-      };
-      localStorage.setItem(LS_GAME, JSON.stringify(state));
+      localStorage.setItem(LS_GAME, JSON.stringify({ remainingNumbers, pickedNumbers, highlightedNumbers, currentWheelAngle, lastDrawnNumber }));
     }
+
     function loadState() {
-      const str = localStorage.getItem(LS_GAME);
-      if (!str) return false;
-      try {
-        const state = JSON.parse(str);
-        if (
-          Array.isArray(state.remainingNumbers) &&
-          Array.isArray(state.pickedNumbers) &&
-          Array.isArray(state.highlightedNumbers)
-        ) {
-          remainingNumbers = state.remainingNumbers;
-          pickedNumbers = state.pickedNumbers;
-          highlightedNumbers = state.highlightedNumbers;
-          currentWheelAngle = state.currentWheelAngle || 0;
-          lastDrawnNumber = state.lastDrawnNumber || null;
-          return true;
-        }
-      } catch { }
-      return false;
+      const data = localStorage.getItem(LS_GAME);
+      if (!data) return false;
+      const state = JSON.parse(data);
+      remainingNumbers = state.remainingNumbers;
+      pickedNumbers = state.pickedNumbers;
+      highlightedNumbers = state.highlightedNumbers;
+      currentWheelAngle = state.currentWheelAngle;
+      lastDrawnNumber = state.lastDrawnNumber;
+      return true;
     }
 
-    // --- Event Listeners ---
-    wheelCanvas.addEventListener('click', function(e) {
+    wheelCanvas.addEventListener('click', (e) => {
       const rect = wheelCanvas.getBoundingClientRect();
-      // Calculate scale factor between CSS size and canvas size
-      const scaleX = wheelCanvas.width / rect.width;
-      const scaleY = wheelCanvas.height / rect.height;
-      const x = (e.clientX - rect.left) * scaleX - center.x;
-      const y = (e.clientY - rect.top) * scaleY - center.y;
-      if (Math.sqrt(x * x + y * y) <= logoRadius) {
-        startSpin();
-      }
+      const x = (e.clientX - rect.left) * (wheelCanvas.width / rect.width) - center.x;
+      const y = (e.clientY - rect.top) * (wheelCanvas.height / rect.height) - center.y;
+      if (Math.sqrt(x*x + y*y) <= logoRadius) startSpin();
     });
 
-    document.getElementById('newGameBtn').addEventListener('click', function() {
-      if (confirm('Start a new game? This will reset the wheel and table.')) {
-        resetGame();
-      }
+    document.getElementById('newGameBtn').addEventListener('click', () => {
+      if (confirm('Start new game?')) resetGame();
     });
 
-    // --- Initial Load ---
-    function init() {
-      if (!loadState()) {
-        resetGame();
-      } else {
-        drawTable();
-        drawWheel(currentWheelAngle); // Initial draw (may be before logo loads)
-      }
+    if (loadState()) {
+      drawTable();
+      updateHistoryDisplay();
+      drawWheel(currentWheelAngle);
+    } else {
+      resetGame();
     }
-    init();
   </script>
 </body>
 </html>
