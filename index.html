@@ -15,7 +15,7 @@
       overflow: hidden;
     }
 
-    /* Sidebar Column */
+    /* Sidebar for Controls and History */
     .sidebar {
       width: 220px;
       background: #2684ff;
@@ -48,8 +48,11 @@
       font-weight: bold;
       cursor: pointer;
       margin-bottom: 20px;
+      transition: background 0.2s;
     }
+    .btn:hover { background: #e0e0e0; }
 
+    /* Vertical History Display */
     .history-container {
       display: flex;
       flex-direction: column;
@@ -89,7 +92,7 @@
       margin-bottom: 10px;
     }
 
-    /* Gameplay Area */
+    /* Side-by-Side Gameplay Area */
     .gameplay-area {
       flex: 1;
       display: flex;
@@ -104,10 +107,10 @@
       flex: 0 0 auto; 
     }
 
-    /* Pointer/Arrow */
+    /* Fixed Arrow Pointer */
     .wheel-pointer {
       position: absolute;
-      right: -30px;
+      right: -25px;
       top: 50%;
       transform: translateY(-50%);
       width: 0; 
@@ -118,7 +121,13 @@
       z-index: 5;
     }
 
-    .wheel-canvas { cursor: pointer; max-height: 85vh; max-width: 45vw; }
+    .wheel-canvas { 
+      cursor: pointer; 
+      max-height: 85vh; 
+      max-width: 45vw; 
+      background: #f3f7fa;
+      border-radius: 50%;
+    }
 
     .table-container {
       background: #fff;
@@ -138,6 +147,7 @@
     .highlighted { background: #ffd870 !important; }
     .last-highlighted { background: #4cd964 !important; color: white !important; font-weight: bold; }
 
+    /* Modal Styling */
     .modal-bg {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -193,6 +203,7 @@
   <audio id="bell" src="bell.wav" preload="auto"></audio>
 
   <script>
+    // Original Logic: Number and Label Generation
     const wheelLabels = [];
     for (let i = 1; i <= 75; i++) {
       let letter = i <= 15 ? 'B' : i <= 30 ? 'I' : i <= 45 ? 'N' : i <= 60 ? 'G' : 'O';
@@ -285,6 +296,7 @@
       if (spinning || remainingNumbers.length === 0) return;
       spinning = true;
       spinStart = performance.now();
+      // Original Logic: Random duration
       spinDuration = 5000 + Math.random() * 2000;
       startAngle = currentWheelAngle;
       lastPlayedSlice = null;
@@ -294,15 +306,19 @@
     function animateSpin() {
       const now = performance.now();
       const elapsed = now - spinStart;
+      // Original Logic: RPM-based total rotations for smooth deceleration
+      const totalRotations = 2 * (spinDuration / 1000); 
       const t = Math.min(elapsed / spinDuration, 1);
-      const ease = 1 - Math.pow(1 - t, 3);
-      const spinAngle = startAngle + (20 * Math.PI * ease + (Math.random() * Math.PI));
+      const ease = 1 - Math.pow(1 - t, 3); // Original cubic ease-out
+      const spinAngle = startAngle + (totalRotations * 2 * Math.PI * ease);
       
+      // Fixed: Calculating winner index at the 3 o'clock pointer position
       const pointerAngle = (0 - spinAngle + 2 * Math.PI) % (2 * Math.PI);
       const sliceAngle = (2 * Math.PI) / remainingNumbers.length;
       let idx = Math.floor(pointerAngle / sliceAngle) % remainingNumbers.length;
       if (idx < 0) idx += remainingNumbers.length;
 
+      // Original Logic: Ticking sound when crossing slices
       if (lastPlayedSlice !== null && idx !== lastPlayedSlice) {
         try { blipAudio.currentTime = 0; blipAudio.play(); } catch(e){}
       }
@@ -316,6 +332,7 @@
         winnerIndex = idx;
         const winnerLabel = remainingNumbers[winnerIndex];
         drawWheel(currentWheelAngle, winnerIndex);
+        
         setTimeout(() => {
           document.getElementById('modal-number').textContent = winnerLabel;
           document.getElementById('modal-bg').style.display = 'flex';
@@ -336,6 +353,7 @@
       lastDrawnNumber = num;
       remainingNumbers.splice(winnerIndex, 1);
       drawTable(); updateSidebarHistory(); drawWheel(currentWheelAngle);
+      // Original Logic: State persistence
       localStorage.setItem('bingoGameState_v5', JSON.stringify({ remainingNumbers, pickedNumbers, highlightedNumbers, currentWheelAngle, lastDrawnNumber }));
     }
 
@@ -355,6 +373,7 @@
 
     document.getElementById('newGameBtn').addEventListener('click', () => { if(confirm('Reset game?')) resetGame(); });
 
+    // Initial Load and State Recovery
     const saved = localStorage.getItem('bingoGameState_v5');
     if (saved) {
       const s = JSON.parse(saved);
