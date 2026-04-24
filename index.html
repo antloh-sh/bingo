@@ -50,7 +50,6 @@
       margin-bottom: 20px;
     }
 
-    /* History within Sidebar - Top Down Flow */
     .history-container {
       display: flex;
       flex-direction: column;
@@ -63,7 +62,6 @@
       font-size: 0.8rem;
       text-transform: uppercase;
       letter-spacing: 1px;
-      margin-top: 5px;
       color: rgba(255,255,255,0.9);
     }
 
@@ -101,7 +99,25 @@
       gap: 20px;
     }
 
-    .wheel-container { flex: 0 0 auto; }
+    .wheel-container { 
+      position: relative;
+      flex: 0 0 auto; 
+    }
+
+    /* Pointer/Arrow */
+    .wheel-pointer {
+      position: absolute;
+      right: -30px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0; 
+      height: 0; 
+      border-top: 20px solid transparent;
+      border-bottom: 20px solid transparent;
+      border-right: 40px solid #788295;
+      z-index: 5;
+    }
+
     .wheel-canvas { cursor: pointer; max-height: 85vh; max-width: 45vw; }
 
     .table-container {
@@ -122,7 +138,6 @@
     .highlighted { background: #ffd870 !important; }
     .last-highlighted { background: #4cd964 !important; color: white !important; font-weight: bold; }
 
-    /* Modal */
     .modal-bg {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -153,17 +168,16 @@
     <div class="history-container">
       <span class="history-label" style="color: #fff; font-weight: bold;">Current</span>
       <div id="hist-0" class="number-box num-current">-</div>
-      
       <span class="history-label">Previous</span>
       <div id="hist-1" class="number-box">-</div>
       <div id="hist-2" class="number-box">-</div>
     </div>
-
     <p class="hint-text">Click the center logo to spin!</p>
   </div>
 
   <div class="gameplay-area">
     <div class="wheel-container">
+      <div class="wheel-pointer"></div>
       <canvas id="wheel" width="480" height="480" class="wheel-canvas"></canvas>
     </div>
     <div class="table-container">
@@ -172,9 +186,7 @@
   </div>
 
   <div id="modal-bg" class="modal-bg">
-    <div class="modal">
-      <h2 id="modal-number"></h2>
-    </div>
+    <div class="modal"><h2 id="modal-number"></h2></div>
   </div>
 
   <audio id="blip" src="blip.wav" preload="auto"></audio>
@@ -203,7 +215,7 @@
     let currentWheelAngle = 0;
     let lastDrawnNumber = null;
     let winnerIndex = null;
-    let winnerLabel = null;
+    let lastPlayedSlice = null;
 
     const blipAudio = document.getElementById('blip');
     const bellAudio = document.getElementById('bell');
@@ -252,23 +264,16 @@
       for (let i = 0; i < remainingNumbers.length; i++) {
         const a0 = angle + i * sliceAngle;
         const a1 = a0 + sliceAngle;
-        ctx.beginPath();
-        ctx.moveTo(center.x, center.y);
+        ctx.beginPath(); ctx.moveTo(center.x, center.y);
         ctx.arc(center.x, center.y, radius, a0, a1, false);
         ctx.fillStyle = (i % 2 === 0) ? '#f7f7f7' : '#e0e0e0';
         if (highlightIndex !== null && i === highlightIndex) ctx.fillStyle = '#ffd870';
-        ctx.fill();
-        ctx.strokeStyle = '#b9cbdf'; ctx.stroke();
-        ctx.save();
-        ctx.translate(center.x, center.y);
-        ctx.rotate(a0 + sliceAngle / 2);
-        ctx.textAlign = 'center'; ctx.font = '11px Segoe UI';
-        ctx.fillStyle = '#2684ff'; ctx.fillText(remainingNumbers[i], radius - 15, 4);
-        ctx.restore();
+        ctx.fill(); ctx.strokeStyle = '#b9cbdf'; ctx.stroke();
+        ctx.save(); ctx.translate(center.x, center.y); ctx.rotate(a0 + sliceAngle / 2);
+        ctx.textAlign = 'center'; ctx.font = '11px Segoe UI'; ctx.fillStyle = '#2684ff';
+        ctx.fillText(remainingNumbers[i], radius - 15, 4); ctx.restore();
       }
-      ctx.save();
-      ctx.translate(center.x, center.y);
-      ctx.rotate(angle);
+      ctx.save(); ctx.translate(center.x, center.y); ctx.rotate(angle);
       ctx.beginPath(); ctx.arc(0, 0, logoRadius - 4, 0, 2 * Math.PI); ctx.clip();
       if (logoLoaded) ctx.drawImage(logoImg, -(logoRadius - 4), -(logoRadius - 4), (logoRadius - 4) * 2, (logoRadius - 4) * 2);
       ctx.restore();
@@ -282,6 +287,7 @@
       spinStart = performance.now();
       spinDuration = 5000 + Math.random() * 2000;
       startAngle = currentWheelAngle;
+      lastPlayedSlice = null;
       animateSpin();
     }
 
@@ -290,13 +296,17 @@
       const elapsed = now - spinStart;
       const t = Math.min(elapsed / spinDuration, 1);
       const ease = 1 - Math.pow(1 - t, 3);
-      const spinAngle = startAngle + (20 * Math.PI * ease);
+      const spinAngle = startAngle + (20 * Math.PI * ease + (Math.random() * Math.PI));
       
       const pointerAngle = (0 - spinAngle + 2 * Math.PI) % (2 * Math.PI);
       const sliceAngle = (2 * Math.PI) / remainingNumbers.length;
       let idx = Math.floor(pointerAngle / sliceAngle) % remainingNumbers.length;
       if (idx < 0) idx += remainingNumbers.length;
 
+      if (lastPlayedSlice !== null && idx !== lastPlayedSlice) {
+        try { blipAudio.currentTime = 0; blipAudio.play(); } catch(e){}
+      }
+      lastPlayedSlice = idx;
       drawWheel(spinAngle);
 
       if (t < 1) {
@@ -304,44 +314,35 @@
       } else {
         currentWheelAngle = spinAngle % (2 * Math.PI);
         winnerIndex = idx;
-        winnerLabel = remainingNumbers[winnerIndex];
+        const winnerLabel = remainingNumbers[winnerIndex];
         drawWheel(currentWheelAngle, winnerIndex);
-        
         setTimeout(() => {
           document.getElementById('modal-number').textContent = winnerLabel;
           document.getElementById('modal-bg').style.display = 'flex';
           try { bellAudio.play(); } catch(e){}
           setTimeout(() => {
             document.getElementById('modal-bg').style.display = 'none';
-            pickNumber();
+            pickNumber(winnerLabel);
             spinning = false;
           }, 4000);
         }, 500);
       }
     }
 
-    function pickNumber() {
-      if (winnerIndex === null) return;
-      pickedNumbers.push(winnerLabel);
-      const num = parseInt(winnerLabel.slice(1));
+    function pickNumber(label) {
+      pickedNumbers.push(label);
+      const num = parseInt(label.slice(1));
       highlightedNumbers.push(num);
       lastDrawnNumber = num;
       remainingNumbers.splice(winnerIndex, 1);
-      drawTable();
-      updateSidebarHistory();
-      drawWheel(currentWheelAngle);
+      drawTable(); updateSidebarHistory(); drawWheel(currentWheelAngle);
       localStorage.setItem('bingoGameState_v5', JSON.stringify({ remainingNumbers, pickedNumbers, highlightedNumbers, currentWheelAngle, lastDrawnNumber }));
     }
 
     function resetGame() {
-      remainingNumbers = [...wheelLabels];
-      pickedNumbers = [];
-      highlightedNumbers = [];
-      lastDrawnNumber = null;
-      currentWheelAngle = 0;
-      drawTable();
-      updateSidebarHistory();
-      drawWheel(0);
+      remainingNumbers = [...wheelLabels]; pickedNumbers = []; highlightedNumbers = [];
+      lastDrawnNumber = null; currentWheelAngle = 0;
+      drawTable(); updateSidebarHistory(); drawWheel(0);
       localStorage.removeItem('bingoGameState_v5');
     }
 
@@ -361,9 +362,7 @@
       highlightedNumbers = s.highlightedNumbers; currentWheelAngle = s.currentWheelAngle; 
       lastDrawnNumber = s.lastDrawnNumber;
     }
-    drawTable();
-    updateSidebarHistory();
-    drawWheel(currentWheelAngle);
+    drawTable(); updateSidebarHistory(); drawWheel(currentWheelAngle);
   </script>
 </body>
 </html>
