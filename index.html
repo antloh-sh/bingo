@@ -15,134 +15,31 @@
       overflow: hidden;
     }
 
-    /* Sidebar for Controls */
+    /* Sidebar Column */
     .sidebar {
-      width: 200px;
+      width: 220px;
       background: #2684ff;
       color: white;
-      padding: 24px;
+      padding: 20px;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      align-items: center;
       box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+      z-index: 10;
     }
 
     .bingo-title {
       font-size: 2rem;
       font-weight: bold;
-      text-align: center;
+      margin-bottom: 20px;
       border-bottom: 2px solid rgba(255,255,255,0.3);
+      width: 100%;
+      text-align: center;
       padding-bottom: 10px;
     }
 
-    /* Main Display Area */
-    .main-content {
-      flex: 1;
-      display: flex;
-      padding: 20px;
-      gap: 20px;
-      align-items: center;
-    }
-
-    /* History Column (Center) */
-    .history-section {
-      flex: 0 0 180px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 20px;
-      background: #fff;
-      height: 90%;
-      border-radius: 15px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    }
-
-    .history-label {
-      font-size: 0.9rem;
-      color: #788295;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .number-box {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.5rem;
-      font-weight: bold;
-      border: 4px solid #eee;
-    }
-
-    .num-current {
-      width: 130px;
-      height: 130px;
-      background: #4cd964;
-      color: white;
-      font-size: 4rem;
-      border-color: #2ec027;
-      box-shadow: 0 0 20px rgba(76, 217, 100, 0.4);
-    }
-
-    .num-prev {
-      background: #f8f9fb;
-      color: #2684ff;
-      opacity: 0.8;
-    }
-
-    /* Wheel & Table Area */
-    .game-section {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .wheel-container {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .wheel-canvas {
-      cursor: pointer;
-      max-height: 70vh;
-      width: auto;
-    }
-
-    .table-section {
-      background: #fff;
-      padding: 15px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    }
-
-    .bingo-table {
-      border-collapse: collapse;
-      width: 100%;
-    }
-
-    .bingo-table th, .bingo-table td {
-      border: 1px solid #dee5ed;
-      padding: 6px 12px;
-      text-align: center;
-      font-size: 1.1rem;
-    }
-
-    .bingo-table th {
-      background: #2684ff;
-      color: white;
-    }
-
-    .highlighted { background: #ffd870 !important; font-weight: bold; }
-    .last-highlighted { background: #4cd964 !important; color: white !important; font-weight: bold; }
-
     .btn {
+      width: 100%;
       padding: 12px;
       border-radius: 8px;
       background: #fff;
@@ -150,57 +47,127 @@
       border: none;
       font-weight: bold;
       cursor: pointer;
-      transition: all 0.2s;
+      margin-bottom: 20px;
     }
 
-    .btn:hover { background: #e0e0e0; }
+    /* History within Sidebar - Top Down Flow */
+    .history-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+    }
 
-    /* Modal Styling */
+    .history-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 5px;
+      color: rgba(255,255,255,0.9);
+    }
+
+    .number-box {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      font-weight: bold;
+      background: rgba(255,255,255,0.2);
+      border: 2px solid rgba(255,255,255,0.4);
+    }
+
+    .num-current {
+      width: 110px;
+      height: 110px;
+      background: #4cd964;
+      color: white;
+      font-size: 3.5rem;
+      border-color: #fff;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      margin-bottom: 10px;
+    }
+
+    /* Gameplay Area */
+    .gameplay-area {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-evenly;
+      padding: 20px;
+      gap: 20px;
+    }
+
+    .wheel-container { flex: 0 0 auto; }
+    .wheel-canvas { cursor: pointer; max-height: 85vh; max-width: 45vw; }
+
+    .table-container {
+      background: #fff;
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .bingo-table { border-collapse: collapse; }
+    .bingo-table th, .bingo-table td {
+      border: 1px solid #dee5ed;
+      padding: 5px 12px;
+      text-align: center;
+      font-size: 1.1rem;
+    }
+    .bingo-table th { background: #2684ff; color: white; }
+    .highlighted { background: #ffd870 !important; }
+    .last-highlighted { background: #4cd964 !important; color: white !important; font-weight: bold; }
+
+    /* Modal */
     .modal-bg {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.4);
+      background: rgba(0,0,0,0.5);
       display: none;
       align-items: center;
       justify-content: center;
       z-index: 1000;
     }
-
     .modal {
       background: #fff;
-      padding: 50px;
-      border-radius: 20px;
+      padding: 60px;
+      border-radius: 30px;
+      border: 8px solid #ffd870;
       text-align: center;
-      border: 5px solid #ffd870;
     }
+    .modal h2 { font-size: 10rem; margin: 0; color: #174bb2; }
 
-    .modal h2 { font-size: 8rem; margin: 0; color: #174bb2; }
+    .hint-text { font-size: 0.75rem; margin-top: auto; text-align: center; opacity: 0.8; }
   </style>
 </head>
 <body>
-  
+
   <div class="sidebar">
     <div class="bingo-title">BINGO</div>
     <button id="newGameBtn" class="btn">New Game</button>
-    <p style="font-size: 0.8rem; margin-top: auto; opacity: 0.8;">Click the center of the wheel to spin!</p>
-  </div>
-
-  <div class="main-content">
-    <div class="history-section">
-      <span class="history-label">Previous</span>
-      <div id="hist-2" class="number-box num-prev">-</div>
-      <div id="hist-1" class="number-box num-prev">-</div>
-      <span class="history-label" style="color: #4cd964; font-weight: bold;">Current</span>
+    
+    <div class="history-container">
+      <span class="history-label" style="color: #fff; font-weight: bold;">Current</span>
       <div id="hist-0" class="number-box num-current">-</div>
+      
+      <span class="history-label">Previous</span>
+      <div id="hist-1" class="number-box">-</div>
+      <div id="hist-2" class="number-box">-</div>
     </div>
 
-    <div class="game-section">
-      <div class="wheel-container">
-        <canvas id="wheel" width="480" height="480" class="wheel-canvas"></canvas>
-      </div>
-      <div class="table-section">
-        <table id="bingoTable" class="bingo-table"></table>
-      </div>
+    <p class="hint-text">Click the center logo to spin!</p>
+  </div>
+
+  <div class="gameplay-area">
+    <div class="wheel-container">
+      <canvas id="wheel" width="480" height="480" class="wheel-canvas"></canvas>
+    </div>
+    <div class="table-container">
+      <table id="bingoTable" class="bingo-table"></table>
     </div>
   </div>
 
@@ -214,9 +181,6 @@
   <audio id="bell" src="bell.wav" preload="auto"></audio>
 
   <script>
-    const bingoNumbers = [];
-    for (let i = 1; i <= 75; i++) bingoNumbers.push(i);
-
     const wheelLabels = [];
     for (let i = 1; i <= 75; i++) {
       let letter = i <= 15 ? 'B' : i <= 30 ? 'I' : i <= 45 ? 'N' : i <= 60 ? 'G' : 'O';
@@ -248,10 +212,7 @@
     let logoLoaded = false;
     logoImg.onload = () => { logoLoaded = true; drawWheel(currentWheelAngle); };
 
-    const LS_GAME = 'bingoGameState_v5';
-
-    function updateHistoryDisplay() {
-      // pickedNumbers is an array of labels like "B5", "I20"
+    function updateSidebarHistory() {
       const reversed = [...pickedNumbers].reverse();
       document.getElementById('hist-0').textContent = reversed[0] || '-';
       document.getElementById('hist-1').textContent = reversed[1] || '-';
@@ -262,14 +223,11 @@
       const table = document.getElementById('bingoTable');
       table.innerHTML = '';
       const thead = document.createElement('thead');
-      const trHead = document.createElement('tr');
+      const trH = document.createElement('tr');
       ['B', 'I', 'N', 'G', 'O'].forEach(l => {
-        const th = document.createElement('th');
-        th.textContent = l;
-        trHead.appendChild(th);
+        const th = document.createElement('th'); th.textContent = l; trH.appendChild(th);
       });
-      thead.appendChild(trHead);
-      table.appendChild(thead);
+      thead.appendChild(trH); table.appendChild(thead);
 
       const tbody = document.createElement('tbody');
       for (let row = 0; row < 15; row++) {
@@ -300,33 +258,22 @@
         ctx.fillStyle = (i % 2 === 0) ? '#f7f7f7' : '#e0e0e0';
         if (highlightIndex !== null && i === highlightIndex) ctx.fillStyle = '#ffd870';
         ctx.fill();
-        ctx.strokeStyle = '#b9cbdf';
-        ctx.stroke();
-
+        ctx.strokeStyle = '#b9cbdf'; ctx.stroke();
         ctx.save();
         ctx.translate(center.x, center.y);
         ctx.rotate(a0 + sliceAngle / 2);
-        ctx.textAlign = 'center';
-        ctx.font = '12px Segoe UI';
-        ctx.fillStyle = '#2684ff';
-        ctx.fillText(remainingNumbers[i], radius - 18, 4);
+        ctx.textAlign = 'center'; ctx.font = '11px Segoe UI';
+        ctx.fillStyle = '#2684ff'; ctx.fillText(remainingNumbers[i], radius - 15, 4);
         ctx.restore();
       }
-
       ctx.save();
       ctx.translate(center.x, center.y);
       ctx.rotate(angle);
-      ctx.beginPath();
-      ctx.arc(0, 0, logoRadius - 4, 0, 2 * Math.PI);
-      ctx.clip();
+      ctx.beginPath(); ctx.arc(0, 0, logoRadius - 4, 0, 2 * Math.PI); ctx.clip();
       if (logoLoaded) ctx.drawImage(logoImg, -(logoRadius - 4), -(logoRadius - 4), (logoRadius - 4) * 2, (logoRadius - 4) * 2);
       ctx.restore();
-
-      ctx.beginPath();
-      ctx.arc(center.x, center.y, logoRadius, 0, 2 * Math.PI);
-      ctx.strokeStyle = '#2684ff';
-      ctx.lineWidth = 3;
-      ctx.stroke();
+      ctx.beginPath(); ctx.arc(center.x, center.y, logoRadius, 0, 2 * Math.PI);
+      ctx.strokeStyle = '#2684ff'; ctx.lineWidth = 4; ctx.stroke();
     }
 
     function startSpin() {
@@ -344,7 +291,7 @@
       const t = Math.min(elapsed / spinDuration, 1);
       const ease = 1 - Math.pow(1 - t, 3);
       const spinAngle = startAngle + (20 * Math.PI * ease);
-
+      
       const pointerAngle = (0 - spinAngle + 2 * Math.PI) % (2 * Math.PI);
       const sliceAngle = (2 * Math.PI) / remainingNumbers.length;
       let idx = Math.floor(pointerAngle / sliceAngle) % remainingNumbers.length;
@@ -361,17 +308,15 @@
         drawWheel(currentWheelAngle, winnerIndex);
         
         setTimeout(() => {
-          const modalBg = document.getElementById('modal-bg');
           document.getElementById('modal-number').textContent = winnerLabel;
-          modalBg.style.display = 'flex';
+          document.getElementById('modal-bg').style.display = 'flex';
           try { bellAudio.play(); } catch(e){}
-          
           setTimeout(() => {
-            modalBg.style.display = 'none';
+            document.getElementById('modal-bg').style.display = 'none';
             pickNumber();
             spinning = false;
           }, 4000);
-        }, 700);
+        }, 500);
       }
     }
 
@@ -382,10 +327,10 @@
       highlightedNumbers.push(num);
       lastDrawnNumber = num;
       remainingNumbers.splice(winnerIndex, 1);
-      saveState();
       drawTable();
-      updateHistoryDisplay();
+      updateSidebarHistory();
       drawWheel(currentWheelAngle);
+      localStorage.setItem('bingoGameState_v5', JSON.stringify({ remainingNumbers, pickedNumbers, highlightedNumbers, currentWheelAngle, lastDrawnNumber }));
     }
 
     function resetGame() {
@@ -394,26 +339,10 @@
       highlightedNumbers = [];
       lastDrawnNumber = null;
       currentWheelAngle = 0;
-      saveState();
       drawTable();
-      updateHistoryDisplay();
+      updateSidebarHistory();
       drawWheel(0);
-    }
-
-    function saveState() {
-      localStorage.setItem(LS_GAME, JSON.stringify({ remainingNumbers, pickedNumbers, highlightedNumbers, currentWheelAngle, lastDrawnNumber }));
-    }
-
-    function loadState() {
-      const data = localStorage.getItem(LS_GAME);
-      if (!data) return false;
-      const state = JSON.parse(data);
-      remainingNumbers = state.remainingNumbers;
-      pickedNumbers = state.pickedNumbers;
-      highlightedNumbers = state.highlightedNumbers;
-      currentWheelAngle = state.currentWheelAngle;
-      lastDrawnNumber = state.lastDrawnNumber;
-      return true;
+      localStorage.removeItem('bingoGameState_v5');
     }
 
     wheelCanvas.addEventListener('click', (e) => {
@@ -423,17 +352,18 @@
       if (Math.sqrt(x*x + y*y) <= logoRadius) startSpin();
     });
 
-    document.getElementById('newGameBtn').addEventListener('click', () => {
-      if (confirm('Start new game?')) resetGame();
-    });
+    document.getElementById('newGameBtn').addEventListener('click', () => { if(confirm('Reset game?')) resetGame(); });
 
-    if (loadState()) {
-      drawTable();
-      updateHistoryDisplay();
-      drawWheel(currentWheelAngle);
-    } else {
-      resetGame();
+    const saved = localStorage.getItem('bingoGameState_v5');
+    if (saved) {
+      const s = JSON.parse(saved);
+      remainingNumbers = s.remainingNumbers; pickedNumbers = s.pickedNumbers; 
+      highlightedNumbers = s.highlightedNumbers; currentWheelAngle = s.currentWheelAngle; 
+      lastDrawnNumber = s.lastDrawnNumber;
     }
+    drawTable();
+    updateSidebarHistory();
+    drawWheel(currentWheelAngle);
   </script>
 </body>
 </html>
