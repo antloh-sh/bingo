@@ -226,9 +226,6 @@
     <div class="modal"><h2 id="modal-number"></h2></div>
   </div>
 
-  <audio id="blip" src="blip.wav" preload="auto"></audio>
-  <audio id="bell" src="bell.wav" preload="auto"></audio>
-
   <script>
     // Logic remains identical to original for fairness and random persistence
     const wheelLabels = [];
@@ -255,8 +252,83 @@
     let winnerIndex = null;
     let lastPlayedSlice = null;
 
-    const blipAudio = document.getElementById('blip');
-    const bellAudio = document.getElementById('bell');
+    // --- Web Audio API sound generation (replaces blip.wav / bell.wav) ---
+    let audioCtx = null;
+    function getAudioCtx() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      return audioCtx;
+    }
+
+    // Short, soft click/tick for each wheel segment tick
+    function playBlip() {
+      try {
+        const ctx = getAudioCtx();
+        const now = ctx.currentTime;
+        const dur = 0.03;
+        const bufferSize = Math.floor(ctx.sampleRate * dur);
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 2);
+        }
+        const noise = ctx.createBufferSource();
+        noise.buffer = buffer;
+
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.value = 1800;
+        filter.Q.value = 1.2;
+
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + dur);
+
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+        noise.start(now);
+        noise.stop(now + dur);
+      } catch (e) {}
+    }
+
+    // Cheerful ascending chime for the winning number announcement
+    function playBell() {
+      try {
+        const ctx = getAudioCtx();
+        const now = ctx.currentTime;
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+
+        notes.forEach((freq, i) => {
+          const startTime = now + i * 0.1;
+
+          const osc = ctx.createOscillator();
+          osc.type = 'sine';
+          osc.frequency.value = freq;
+
+          const overtone = ctx.createOscillator();
+          overtone.type = 'sine';
+          overtone.frequency.value = freq * 2.01; // slight detune for bell shimmer
+
+          const gain = ctx.createGain();
+          gain.gain.setValueAtTime(0.0001, startTime);
+          gain.gain.exponentialRampToValueAtTime(0.28, startTime + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.9);
+
+          const overtoneGain = ctx.createGain();
+          overtoneGain.gain.setValueAtTime(0.0001, startTime);
+          overtoneGain.gain.exponentialRampToValueAtTime(0.07, startTime + 0.02);
+          overtoneGain.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.6);
+
+          osc.connect(gain); gain.connect(ctx.destination);
+          overtone.connect(overtoneGain); overtoneGain.connect(ctx.destination);
+
+          osc.start(startTime); osc.stop(startTime + 0.9);
+          overtone.start(startTime); overtone.stop(startTime + 0.6);
+        });
+      } catch (e) {}
+    }
+
     const logoImg = new Image();
     logoImg.src = "logo.png";
     let logoLoaded = false;
@@ -352,7 +424,7 @@
       if (idx < 0) idx += remainingNumbers.length;
 
       if (lastPlayedSlice !== null && idx !== lastPlayedSlice) {
-        try { blipAudio.currentTime = 0; blipAudio.play(); } catch(e){}
+        playBlip();
       }
       lastPlayedSlice = idx;
       drawWheel(spinAngle);
@@ -367,7 +439,7 @@
         setTimeout(() => {
           document.getElementById('modal-number').innerHTML = formatBingoText(winnerLabel);
           document.getElementById('modal-bg').style.display = 'flex';
-          try { bellAudio.play(); } catch(e){}
+          playBell();
           setTimeout(() => {
             document.getElementById('modal-bg').style.display = 'none';
             pickNumber(winnerLabel);
