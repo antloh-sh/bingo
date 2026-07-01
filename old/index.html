@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bingo App - Sheng Hong AAC</title>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bingo-blue: #0d47a1;
+      --bingo-red: #b71c1c;
+      --sidebar-navy: #102a43;
+      --highlight-green: #4cd964;
+    }
+
+    body {
+      font-family: 'Atkinson Hyperlegible', sans-serif;
+      background: #f0f4f8;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      overflow: hidden; /* Prevent global scroll */
+    }
+
+    /* Sidebar: Fixed width, internal scroll if needed */
+    .sidebar {
+      width: 260px;
+      background: var(--sidebar-navy);
+      color: white;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 4px 0 15px rgba(0,0,0,0.3);
+      z-index: 10;
+      overflow-y: auto; 
+      height: 100vh;
+      box-sizing: border-box;
+    }
+
+    .bingo-title {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 15px;
+      border-bottom: 3px solid #2684ff;
+      width: 100%;
+      text-align: center;
+      padding-bottom: 10px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      background: #2684ff;
+      color: white;
+      border: none;
+      font-weight: 700;
+      cursor: pointer;
+      margin-bottom: 20px;
+      font-size: 1.1rem;
+    }
+
+    .history-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      width: 100%;
+    }
+
+    .history-label {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: #9fb3c8;
+    }
+
+    /* CURRENT: Responsive font to prevent circle overflow */
+    .num-current {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(2.5rem, 4vw, 5rem); /* Dynamic sizing */
+      font-weight: 700;
+      background: #ffffff;
+      border: 8px solid var(--highlight-green);
+      box-shadow: 0 0 25px rgba(76, 217, 100, 0.4);
+      margin-bottom: 10px;
+    }
+
+    .num-previous {
+      width: 85px;
+      height: 85px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      font-weight: 700;
+      background: #ffffff;
+      color: var(--bingo-blue);
+      border: 4px solid #486581;
+    }
+
+    .letter-part { color: var(--bingo-blue); }
+    .number-part { color: var(--bingo-red); }
+
+    /* Gameplay Area: Centered layout */
+    .gameplay-area {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-evenly;
+      padding: 10px 40px;
+      height: 100vh;
+      box-sizing: border-box;
+    }
+
+    /* POINTER FIX: Absolute positioning relative to container */
+    .wheel-container { 
+      position: relative; 
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .wheel-pointer {
+      position: absolute;
+      right: -30px; /* Aligned to the edge of the wheel */
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0; height: 0; 
+      border-top: 25px solid transparent;
+      border-bottom: 25px solid transparent;
+      border-right: 50px solid var(--bingo-red);
+      z-index: 5;
+      filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.2));
+    }
+
+    .wheel-canvas { 
+      cursor: pointer; 
+      max-height: 85vh;
+      max-width: 42vw;
+      border-radius: 50%;
+      background: #ffffff;
+    }
+
+    /* TABLE: Ensured 15 rows visibility */
+    .table-container {
+      background: #fff;
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      max-height: 90vh;
+    }
+
+    .bingo-table { border-collapse: collapse; }
+    .bingo-table th, .bingo-table td {
+      border: 1px solid #d1d9e6;
+      padding: 6px 14px;
+      text-align: center;
+      font-size: 1.15rem;
+    }
+    
+    .th-B { background: #d32f2f; color: white; }
+    .th-I { background: #1976d2; color: white; }
+    .th-N { background: #388e3c; color: white; }
+    .th-G { background: #fbc02d; color: black; }
+    .th-O { background: #7b1fa2; color: white; }
+
+    .highlighted { background: #fff9c4 !important; color: var(--bingo-red); }
+    .last-highlighted { background: #4caf50 !important; color: white !important; font-weight: 700; }
+
+    .modal-bg {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(16, 42, 67, 0.9);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal {
+      background: #ffffff;
+      padding: 60px;
+      border-radius: 50px;
+      border: 15px solid var(--bingo-blue);
+      text-align: center;
+    }
+    .modal h2 { font-size: 12rem; margin: 0; display: flex; gap: 10px; }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <div class="bingo-title">BINGO</div>
+    <button id="newGameBtn" class="btn">New Game</button>
+    
+    <div class="history-container">
+      <span class="history-label">Current Draw</span>
+      <div id="hist-0" class="num-current">-</div>
+      
+      <span class="history-label">Previous</span>
+      <div id="hist-1" class="num-previous">-</div>
+      <div id="hist-2" class="num-previous">-</div>
+    </div>
+  </div>
+
+  <div class="gameplay-area">
+    <div class="wheel-container">
+      <div class="wheel-pointer"></div>
+      <canvas id="wheel" width="480" height="480" class="wheel-canvas"></canvas>
+    </div>
+    <div class="table-container">
+      <table id="bingoTable" class="bingo-table"></table>
+    </div>
+  </div>
+
+  <div id="modal-bg" class="modal-bg">
+    <div class="modal"><h2 id="modal-number"></h2></div>
+  </div>
+
+  <audio id="blip" src="blip.wav" preload="auto"></audio>
+  <audio id="bell" src="bell.wav" preload="auto"></audio>
+
+  <script>
+    // Logic remains identical to original for fairness and random persistence
+    const wheelLabels = [];
+    for (let i = 1; i <= 75; i++) {
+      let letter = i <= 15 ? 'B' : i <= 30 ? 'I' : i <= 45 ? 'N' : i <= 60 ? 'G' : 'O';
+      wheelLabels.push(`${letter}${i}`);
+    }
+
+    const wheelCanvas = document.getElementById('wheel');
+    const ctx = wheelCanvas.getContext('2d');
+    const center = { x: 240, y: 240 };
+    const radius = 210;
+    const logoRadius = 80;
+
+    let remainingNumbers = [...wheelLabels];
+    let pickedNumbers = [];
+    let highlightedNumbers = [];
+    let spinning = false;
+    let spinStart = null;
+    let spinDuration = 0;
+    let startAngle = 0;
+    let currentWheelAngle = 0;
+    let lastDrawnNumber = null;
+    let winnerIndex = null;
+    let lastPlayedSlice = null;
+
+    const blipAudio = document.getElementById('blip');
+    const bellAudio = document.getElementById('bell');
+    const logoImg = new Image();
+    logoImg.src = "logo.png";
+    let logoLoaded = false;
+    logoImg.onload = () => { logoLoaded = true; drawWheel(currentWheelAngle); };
+
+    function formatBingoText(str) {
+      if (!str || str === '-') return '-';
+      return `<span class="letter-part">${str.charAt(0)}</span><span class="number-part">${str.slice(1)}</span>`;
+    }
+
+    function updateSidebarHistory() {
+      const reversed = [...pickedNumbers].reverse();
+      document.getElementById('hist-0').innerHTML = formatBingoText(reversed[0]);
+      document.getElementById('hist-1').innerHTML = formatBingoText(reversed[1]);
+      document.getElementById('hist-2').innerHTML = formatBingoText(reversed[2]);
+    }
+
+    function drawTable() {
+      const table = document.getElementById('bingoTable');
+      table.innerHTML = '';
+      const thead = document.createElement('thead');
+      const trH = document.createElement('tr');
+      ['B', 'I', 'N', 'G', 'O'].forEach(l => {
+        const th = document.createElement('th'); th.textContent = l; th.className = `th-${l}`; trH.appendChild(th);
+      });
+      thead.appendChild(trH); table.appendChild(thead);
+
+      const tbody = document.createElement('tbody');
+      for (let row = 0; row < 15; row++) {
+        const tr = document.createElement('tr');
+        for (let col = 0; col < 5; col++) {
+          const num = col * 15 + row + 1;
+          const td = document.createElement('td');
+          td.textContent = num;
+          if (highlightedNumbers.includes(num)) {
+            td.classList.add(lastDrawnNumber === num ? 'last-highlighted' : 'highlighted');
+          }
+          tr.appendChild(td);
+        }
+        tbody.appendChild(tr);
+      }
+      table.appendChild(tbody);
+    }
+
+    function drawWheel(angle = 0, highlightIndex = null) {
+      ctx.clearRect(0, 0, 480, 480);
+      const sliceAngle = (2 * Math.PI) / remainingNumbers.length;
+      for (let i = 0; i < remainingNumbers.length; i++) {
+        const a0 = angle + i * sliceAngle;
+        const a1 = a0 + sliceAngle;
+        ctx.beginPath(); ctx.moveTo(center.x, center.y);
+        ctx.arc(center.x, center.y, radius, a0, a1, false);
+        ctx.fillStyle = (i % 2 === 0) ? '#ffffff' : '#f0f4f8';
+        if (highlightIndex !== null && i === highlightIndex) ctx.fillStyle = '#ffca28';
+        ctx.fill(); ctx.strokeStyle = '#cbd5e1'; ctx.stroke();
+        
+        ctx.save(); ctx.translate(center.x, center.y); ctx.rotate(a0 + sliceAngle / 2);
+        ctx.textAlign = 'center'; 
+        ctx.font = '700 13px Atkinson Hyperlegible, Arial';
+        const txt = remainingNumbers[i];
+        ctx.fillStyle = '#0d47a1'; ctx.fillText(txt.charAt(0), radius - 22, 4);
+        ctx.fillStyle = '#b71c1c'; ctx.fillText(txt.slice(1), radius - 8, 4);
+        ctx.restore();
+      }
+      ctx.save(); ctx.translate(center.x, center.y); ctx.rotate(angle);
+      ctx.beginPath(); ctx.arc(0, 0, logoRadius - 4, 0, 2 * Math.PI); ctx.clip();
+      if (logoLoaded) ctx.drawImage(logoImg, -(logoRadius - 4), -(logoRadius - 4), (logoRadius - 4) * 2, (logoRadius - 4) * 2);
+      ctx.restore();
+      ctx.beginPath(); ctx.arc(center.x, center.y, logoRadius, 0, 2 * Math.PI);
+      ctx.strokeStyle = '#2684ff'; ctx.lineWidth = 4; ctx.stroke();
+    }
+
+    function startSpin() {
+      if (spinning || remainingNumbers.length === 0) return;
+      spinning = true;
+      spinStart = performance.now();
+      spinDuration = 5000 + Math.random() * 2000;
+      startAngle = currentWheelAngle;
+      animateSpin();
+    }
+
+    function animateSpin() {
+      const now = performance.now();
+      const elapsed = now - spinStart;
+      const totalRotations = 2 * (spinDuration / 1000); 
+      const t = Math.min(elapsed / spinDuration, 1);
+      const ease = 1 - Math.pow(1 - t, 3);
+      const spinAngle = startAngle + (totalRotations * 2 * Math.PI * ease);
+      
+      const pointerAngle = (0 - spinAngle + 2 * Math.PI) % (2 * Math.PI);
+      const sliceAngle = (2 * Math.PI) / remainingNumbers.length;
+      let idx = Math.floor(pointerAngle / sliceAngle) % remainingNumbers.length;
+      if (idx < 0) idx += remainingNumbers.length;
+
+      if (lastPlayedSlice !== null && idx !== lastPlayedSlice) {
+        try { blipAudio.currentTime = 0; blipAudio.play(); } catch(e){}
+      }
+      lastPlayedSlice = idx;
+      drawWheel(spinAngle);
+
+      if (t < 1) {
+        requestAnimationFrame(animateSpin);
+      } else {
+        currentWheelAngle = spinAngle % (2 * Math.PI);
+        winnerIndex = idx;
+        const winnerLabel = remainingNumbers[winnerIndex];
+        drawWheel(currentWheelAngle, winnerIndex);
+        setTimeout(() => {
+          document.getElementById('modal-number').innerHTML = formatBingoText(winnerLabel);
+          document.getElementById('modal-bg').style.display = 'flex';
+          try { bellAudio.play(); } catch(e){}
+          setTimeout(() => {
+            document.getElementById('modal-bg').style.display = 'none';
+            pickNumber(winnerLabel);
+            spinning = false;
+          }, 4000);
+        }, 500);
+      }
+    }
+
+    function pickNumber(label) {
+      pickedNumbers.push(label);
+      highlightedNumbers.push(parseInt(label.slice(1)));
+      lastDrawnNumber = parseInt(label.slice(1));
+      remainingNumbers.splice(winnerIndex, 1);
+      drawTable(); updateSidebarHistory(); drawWheel(currentWheelAngle);
+      localStorage.setItem('bingoGameState_v5', JSON.stringify({ remainingNumbers, pickedNumbers, highlightedNumbers, currentWheelAngle, lastDrawnNumber }));
+    }
+
+    function resetGame() {
+      remainingNumbers = [...wheelLabels]; pickedNumbers = []; highlightedNumbers = [];
+      lastDrawnNumber = null; currentWheelAngle = 0;
+      drawTable(); updateSidebarHistory(); drawWheel(0);
+      localStorage.removeItem('bingoGameState_v5');
+    }
+
+    wheelCanvas.addEventListener('click', (e) => {
+      const rect = wheelCanvas.getBoundingClientRect();
+      const x = (e.clientX - rect.left) * (480 / rect.width) - center.x;
+      const y = (e.clientY - rect.top) * (480 / rect.height) - center.y;
+      if (Math.sqrt(x*x + y*y) <= logoRadius) startSpin();
+    });
+
+    document.getElementById('newGameBtn').addEventListener('click', () => { if(confirm('Reset game?')) resetGame(); });
+
+    const saved = localStorage.getItem('bingoGameState_v5');
+    if (saved) {
+      const s = JSON.parse(saved);
+      remainingNumbers = s.remainingNumbers; pickedNumbers = s.pickedNumbers; 
+      highlightedNumbers = s.highlightedNumbers; currentWheelAngle = s.currentWheelAngle; 
+      lastDrawnNumber = s.lastDrawnNumber;
+    }
+    drawTable(); updateSidebarHistory(); drawWheel(currentWheelAngle);
+  </script>
+</body>
+</html>
